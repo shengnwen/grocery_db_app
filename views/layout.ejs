@@ -10,8 +10,61 @@
   <body>
     <div id="layout">
       <%- body %>
-      <div id="layout-footer"></div>
     </div>
+  
+  <script>
+    var foodList = [];
+  
+    var canvas = document.getElementById("canvas");
+    
+    //recreates the list on the page based on foodList
+    function updatePage()
+    {
+        itemsListDiv = document.getElementById("itemsList");
+            
+        html = "";
+        for	(i = 0; i < foodList.length; i++) {
+            html += htmlForItem(foodList[i], i);
+        }
+            
+        itemsListDiv.innerHTML = html;
+    }
+    
+    function addToFoodList(food)
+    {
+        if (food !== "")
+        {
+            foodList.push(food);
+            
+            updatePage();
+        }
+    }
+    
+    function updateFoodList(food, i)
+    {
+        if (food !== "")
+        {
+            foodList[i] = food;
+        }
+    }
+    
+    function deleteButtonClick(i)
+    {
+        foodList.splice(i, 1);
+        
+        updatePage();
+    }
+    
+    function htmlForItem(item, i)
+    {
+        return '<div class="item">' +
+        '<input class="update-input" type="text" name="content" onKeyDown="updateFoodList(value,' + i + ')"' +
+        'onInput="updateFoodList(value,' + i + ')" value="' + item + '" />' +
+        '<button id=button"' + i +'" class="del-btn" type="button" onclick="deleteButtonClick('+ i + ')"  title="Delete this grocery item">Delete</a>' +
+        '</div>'
+    }
+  </script>  
+    
   </body>
 </html>
 

@@ -42,7 +42,7 @@ exports.destroy = function ( req, res ) {
     });
 };
 
-exports.edit = function ( req, res ) {
+/*exports.edit = function ( req, res ) {
   db.all("SELECT name FROM groceries", function(err, items) {
     res.render( 'edit', {
       title : 'Grocery List',
@@ -59,4 +59,4 @@ exports.update = function (req, res ) {
       res.redirect( '/' );                                      // callback in db.run()
     });
   });
-};
+};*/

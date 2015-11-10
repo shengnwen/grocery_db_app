@@ -81,6 +81,7 @@ body {
 
 /* line 19, ../sass/screen.sass */
 .del-btn, .del-btn-edit {
+  border:0px;
   display: inline;
   float: right;
   background: url("/images/delete.png") no-repeat bottom left;
@@ -89,6 +90,11 @@ body {
   color: transparent;
   width: 16px;
   height: 18px;
+  border-radius: 5px;
+}
+
+.del-btn:hover {
+  background-color: #ffb2b2
 }
 
 /* line 28, ../sass/screen.sass */
@@ -144,7 +150,13 @@ body {
 
 /* line 66, ../sass/screen.sass */
 .update-input {
-  width: 220px;
+  background: transparent;
+  border: 0px;
+  width: 210px;
+}
+
+.update-input:focus {
+  background:#ffffff;
 }
 
 /* line 69, ../sass/screen.sass */

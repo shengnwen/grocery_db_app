@@ -3,17 +3,16 @@
 <h1 id="page-title"><%= title %></h1>
 
 <div id="list">
-  <form action="/create" method="post" accept-charset="utf-8">
     <div class="item-new">
-      <input class="input" type="text" name="content" />
+      <input class="input" type="text" name="content" onkeydown="if (event.keyCode === 13) 
+                                                                {
+                                                                    addToFoodList(value);
+                                                                    value = '';
+                                                                }"/>
     </div>
   </form>
 
-<% items.forEach( function ( item ){ %>
-  <div class="item">
-    <a class="update-link" href="/edit/<%= item.name %>" title="Update this grocery item"><%= item.name %></a>
-    <a class="del-btn" href="/destroy/<%= item.name %>" title="Delete this grocery item">Delete</a>
+  <div id = "itemsList">
   </div>
-<% }); %>
 </div>
 
