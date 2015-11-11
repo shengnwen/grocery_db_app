@@ -1,17 +1,28 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title><%= title %></title>
+    <title>Grocery List App</title>
     <link rel='stylesheet' href='/stylesheets/screen.css' />
     <!--[if lt IE 9]>
     <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
   </head>
   <body>
-    <div id="layout">
-      <%- body %>
+
+    <h1 id="page-title">Grocery List</h1>
+
+    <div id="list">
+      <div class="item-new">
+        <input class="input" type="text" name="content" onkeydown="if (event.keyCode === 13) 
+                                                              {
+                                                                  addToFoodList(value);
+                                                                  value = '';
+                                                              }"/>
+      </div>
+      <div id = "itemsList">
+      </div>
     </div>
-  
+
   <script>
     var foodList = [];
   

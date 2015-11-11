@@ -1,4 +1,3 @@
-/* line 17, ../../../../../Users/fred/.rvm/gems/ruby-1.9.3-p0/gems/compass-0.12.1/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
 html, body, div, span, applet, object, iframe,
 h1, h2, h3, h4, h5, h6, p, blockquote, pre,
 a, abbr, acronym, address, big, cite, code,
@@ -20,55 +19,46 @@ time, mark, audio, video {
   vertical-align: baseline;
 }
 
-/* line 20, ../../../../../Users/fred/.rvm/gems/ruby-1.9.3-p0/gems/compass-0.12.1/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
 body {
   line-height: 1;
 }
 
-/* line 22, ../../../../../Users/fred/.rvm/gems/ruby-1.9.3-p0/gems/compass-0.12.1/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
 ol, ul {
   list-style: none;
 }
 
-/* line 24, ../../../../../Users/fred/.rvm/gems/ruby-1.9.3-p0/gems/compass-0.12.1/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
 table {
   border-collapse: collapse;
   border-spacing: 0;
 }
 
-/* line 26, ../../../../../Users/fred/.rvm/gems/ruby-1.9.3-p0/gems/compass-0.12.1/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
 caption, th, td {
   text-align: left;
   font-weight: normal;
   vertical-align: middle;
 }
 
-/* line 28, ../../../../../Users/fred/.rvm/gems/ruby-1.9.3-p0/gems/compass-0.12.1/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
 q, blockquote {
   quotes: none;
 }
-/* line 101, ../../../../../Users/fred/.rvm/gems/ruby-1.9.3-p0/gems/compass-0.12.1/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
+
 q:before, q:after, blockquote:before, blockquote:after {
   content: "";
   content: none;
 }
 
-/* line 30, ../../../../../Users/fred/.rvm/gems/ruby-1.9.3-p0/gems/compass-0.12.1/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
 a img {
   border: none;
 }
 
-/* line 114, ../../../../../Users/fred/.rvm/gems/ruby-1.9.3-p0/gems/compass-0.12.1/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
 article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section, summary {
   display: block;
 }
 
-/* line 7, ../sass/screen.sass */
 body {
   font: 14px "Lucida Grande", "Lucida Sans Unicode", sans-serif;
 }
 
-/* line 10, ../sass/screen.sass */
 #page-title {
   color: #666666;
   background-color: #f8f8f8;
@@ -79,7 +69,6 @@ body {
   text-shadow: 0 1px 1px white;
 }
 
-/* line 19, ../sass/screen.sass */
 .del-btn, .del-btn-edit {
   border:0px;
   display: inline;
@@ -97,13 +86,6 @@ body {
   background-color: #ffb2b2
 }
 
-/* line 28, ../sass/screen.sass */
-.del-btn-edit {
-  width: 20px;
-  height: 21px;
-}
-
-/* line 32, ../sass/screen.sass */
 #list {
   width: 283px;
   margin: 0 auto;
@@ -111,7 +93,6 @@ body {
   position: relative;
 }
 
-/* line 38, ../sass/screen.sass */
 .item, .item-new {
   overflow: hidden;
   *zoom: 1;
@@ -125,19 +106,17 @@ body {
   text-shadow: 1px 1px 0 white;
   width: 250px;
 }
-/* line 49, ../sass/screen.sass */
+
 .item:hover, .item-new:hover {
   border-color: #9be0f9;
   box-shadow: 0 0 5px #a6d5fd;
 }
 
-/* line 53, ../sass/screen.sass */
 .item-new {
   padding: 4px 5px;
   width: 258px;
 }
 
-/* line 57, ../sass/screen.sass */
 .input, .update-input {
   border: 1px solid #cccccc;
   color: #666666;
@@ -148,7 +127,6 @@ body {
   height: 19px;
 }
 
-/* line 66, ../sass/screen.sass */
 .update-input {
   background: transparent;
   border: 0px;
@@ -159,107 +137,14 @@ body {
   background:#ffffff;
 }
 
-/* line 69, ../sass/screen.sass */
-.content {
-  color: #777777;
-  font-size: 1.2em;
-  text-shadow: 1px 1px 0 white;
-}
-
-/* line 74, ../sass/screen.sass */
-.update-link {
-  display: inline;
-  float: left;
-  font-family: "Lucida Grande", "Lucida Sans Unicode", sans-serif;
-  color: #666666;
-  text-decoration: none;
-  overflow: hidden;
-  white-space: nowrap;
-  max-width: 15em;
-  text-overflow: ellipsis;
-}
-/* line 83, ../sass/screen.sass */
-.update-link:hover {
-  color: #333333;
-}
-
-/* line 86, ../sass/screen.sass */
-.update-form {
-  display: inline;
-  float: left;
-}
-
-/* line 89, ../sass/screen.sass */
-#footer-wrap {
-  background-color: #f8f8f8;
-}
-
-/* line 92, ../sass/screen.sass */
-#footer {
-  overflow: hidden;
-  *zoom: 1;
-  width: 210px;
-  margin: 0 auto;
-  position: relative;
-  top: 17px;
-}
-
-/* line 99, ../sass/screen.sass */
-#dreamerslab {
-  display: inline;
-  float: left;
-  font-family: Georgia;
-  background: url("/images/dreamerslab.png") no-repeat top left;
-  padding: 0 0 3px 16px;
-  color: #333333;
-  text-decoration: none;
-  font-weight: bold;
-}
-/* line 107, ../sass/screen.sass */
-#dreamerslab:hover {
-  text-decoration: underline;
-}
-
-/* line 110, ../sass/screen.sass */
-.footer-content {
-  display: inline;
-  float: left;
-  color: #333333;
-  font-family: Georgia;
-  padding: 0 4px;
-}
-
-/* line 116, ../sass/screen.sass */
-#github-link {
-  color: #666666;
-  text-decoration: none;
-}
-/* line 119, ../sass/screen.sass */
-#github-link:hover {
-  text-decoration: underline;
-}
-
-/* line 10, ../../../../../Users/fred/.rvm/gems/ruby-1.9.3-p0/gems/compass-0.12.1/frameworks/compass/stylesheets/compass/layout/_sticky-footer.scss */
 html, body {
   height: 100%;
 }
 
-/* line 12, ../../../../../Users/fred/.rvm/gems/ruby-1.9.3-p0/gems/compass-0.12.1/frameworks/compass/stylesheets/compass/layout/_sticky-footer.scss */
 #layout {
   clear: both;
   min-height: 100%;
   height: auto !important;
   height: 100%;
   margin-bottom: -48px;
-}
-/* line 18, ../../../../../Users/fred/.rvm/gems/ruby-1.9.3-p0/gems/compass-0.12.1/frameworks/compass/stylesheets/compass/layout/_sticky-footer.scss */
-#layout #layout-footer {
-  height: 48px;
-}
-
-/* line 20, ../../../../../Users/fred/.rvm/gems/ruby-1.9.3-p0/gems/compass-0.12.1/frameworks/compass/stylesheets/compass/layout/_sticky-footer.scss */
-#footer-wrap {
-  clear: both;
-  position: relative;
-  height: 48px;
 }
