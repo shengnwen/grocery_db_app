@@ -28,6 +28,12 @@ app.use( app.router );
 app.use( express.static( path.join( __dirname, 'public' )) );
 
 app.get( '/', function(req, res) { res.render( 'layout')});
+app.get( '/findItems', function(req, res) {res.send(req.param("item").join("/"))});
+
+app.param('item', function(req, res, next, item) {
+  console.log('item: %s', item);
+  next();
+});
 
 http.createServer( app ).listen( app.get( 'port' ), function(){
   console.log( 'Express server listening on port ' + app.get( 'port' ));

@@ -21,6 +21,7 @@
       </div>
       <div id = "itemsList">
       </div>
+      <button id="findButton" type="button" onclick="findItems()" disabled=true title="Find the groceries.">Find</button>
     </div>
 
   <script>
@@ -29,6 +30,7 @@
     var canvas = document.getElementById("canvas");
     
     //recreates the list on the page based on foodList
+    //sets the correct state for find button
     function updatePage()
     {
         itemsListDiv = document.getElementById("itemsList");
@@ -39,6 +41,9 @@
         }
             
         itemsListDiv.innerHTML = html;
+        
+        findButton = document.getElementById("findButton");
+        findButton.disabled = (foodList.length === 0);
     }
     
     function addToFoodList(food)
@@ -66,12 +71,17 @@
         updatePage();
     }
     
+    function findItems()
+    {
+        location.href = "/findItems?item=" + foodList.join("&item=");
+    }
+    
     function htmlForItem(item, i)
     {
         return '<div class="item">' +
         '<input class="update-input" type="text" name="content" onKeyDown="updateFoodList(value,' + i + ')"' +
         'onInput="updateFoodList(value,' + i + ')" value="' + item + '" />' +
-        '<button id=button"' + i +'" class="del-btn" type="button" onclick="deleteButtonClick('+ i + ')"  title="Delete this grocery item">Delete</a>' +
+        '<button id=button"' + i +'" class="del-btn" type="button" onclick="deleteButtonClick('+ i + ')"  title="Delete this grocery item">Delete</button>' +
         '</div>'
     }
   </script>  
