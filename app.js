@@ -29,6 +29,7 @@ app.use( express.static( path.join( __dirname, 'public' )) );
 
 app.get( '/', function(req, res) { res.render( 'layout')});
 app.get( '/findItems', function(req, res) {res.send(req.param("item").join("/"))});
+app.get( '/itemChoices', function(req, res) {res.send(req.param("item"))});
 
 app.param('item', function(req, res, next, item) {
   console.log('item: %s', item);
