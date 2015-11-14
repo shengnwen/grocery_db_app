@@ -116,7 +116,7 @@
     
     function findItems()
     {
-        location.href = "/findItems?item=" + foodList.join("&item=");
+        location.href = "/findItems?item=" + foodList.map(function(x){return x.name}).join("&item=");
     }
     
     //returns a unique int
