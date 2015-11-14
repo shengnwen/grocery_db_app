@@ -94,10 +94,30 @@ body {
   position: relative;
 }
 
+#storeList-L {
+  border:1;
+  width: 200px;
+  margin: auto;
+  padding: 20px 0 15px;
+  position: relative;
+  float: left;
+}
+
+#storeList-R {
+  border:1;
+  width: 200px;
+  margin: auto;
+  padding: 20px 0 15px;
+  position: relative;
+  float: left;
+  margin-left: 100px;
+}
+
 .find {
     margin-left: 200px;
     clear: left;
 }
+
 
 .item, .item-new, .item-choice {
   overflow: hidden;

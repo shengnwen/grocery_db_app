@@ -28,7 +28,7 @@ app.use( app.router );
 app.use( express.static( path.join( __dirname, 'public' )) );
 
 app.get( '/', function(req, res) { res.render( 'layout')});
-app.get( '/findItems', function(req, res) {res.send(req.param("item").join("/"))});
+//app.get( '/findItems', function(req, res) {res.send(req.param("item").join("/"))});
 
 // send back form
 app.get( '/itemChoices', function(req, res) {
@@ -36,10 +36,10 @@ app.get( '/itemChoices', function(req, res) {
            '" checked> ' + req.param("item")  + '<br>');
 });
 
-
-app.param('item', function(req, res, next, item) {
-  console.log('item: %s', item);
-  next();
+app.get( '/findItems', function(req, res) {
+	res.render( 'itemsSearch', {
+		groceries: req.param("item")
+	});
 });
 
 http.createServer( app ).listen( app.get( 'port' ), function(){
