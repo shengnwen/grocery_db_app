@@ -29,9 +29,7 @@
 
   <script>
     var foodList = [];
-  
     var _nextId = 0;
-  
     var canvas = document.getElementById("canvas");
     
     window.addEventListener('mousedown', onMouseDown, false);
@@ -114,6 +112,7 @@
         autoFindButtonDisabled();
     }
     
+    //calls for a new url
     function findItems()
     {
         location.href = "/findItems?item=" + foodList.map(function(x){return x.name}).join("&item=");
@@ -138,6 +137,7 @@
         itemChoices.style.display = "inline";
     }
     
+    //returns the html needed for one item selector and associated choosing window
     function htmlForItem(item, i)
     {
         return '<iframe class="item-choice" id="itemChoices' + i +
