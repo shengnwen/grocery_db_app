@@ -20,7 +20,7 @@ app.set( 'view engine', 'ejs' );
 // do we need all of these?  Check what each does individually.
 app.use( express.favicon() );
 app.use( express.logger( 'dev' ) );
-app.use( express.bodyParser() );
+app.use( express.bodyParser() ); // remove this - apparently it isn't safe
 app.use( express.json() );
 app.use( express.urlencoded() );
 app.use( express.methodOverride() );
