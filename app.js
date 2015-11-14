@@ -29,7 +29,13 @@ app.use( express.static( path.join( __dirname, 'public' )) );
 
 app.get( '/', function(req, res) { res.render( 'layout')});
 app.get( '/findItems', function(req, res) {res.send(req.param("item").join("/"))});
-app.get( '/itemChoices', function(req, res) {res.send(req.param("item"))});
+
+// send back form
+app.get( '/itemChoices', function(req, res) {
+	res.send('<input type="checkbox" name="content" value="' + req.param("item") + 
+           '" checked> ' + req.param("item")  + '<br>');
+});
+
 
 app.param('item', function(req, res, next, item) {
   console.log('item: %s', item);
