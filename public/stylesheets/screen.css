@@ -87,13 +87,18 @@ body {
 }
 
 #list {
-  width: 283px;
-  margin: 0 auto;
+  border:1;
+  width: 550px;
+  margin: auto;
   padding: 20px 0 15px;
   position: relative;
 }
 
-.item, .item-new {
+.find {
+    clear: left;
+}
+
+.item, .item-new, .item-choice {
   overflow: hidden;
   *zoom: 1;
   background-color: #f9f9f9;
@@ -105,9 +110,10 @@ body {
   position: relative;
   text-shadow: 1px 1px 0 white;
   width: 250px;
+  clear: left;
 }
 
-.item:hover, .item-new:hover {
+.item:hover, .item-new:hover, .item-choice:hover {
   border-color: #9be0f9;
   box-shadow: 0 0 5px #a6d5fd;
 }
@@ -115,6 +121,11 @@ body {
 .item-new {
   padding: 4px 5px;
   width: 258px;
+}
+
+.item-choice {
+  height: 250px;
+  float: right;
 }
 
 .input, .update-input {

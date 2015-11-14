@@ -10,6 +10,9 @@
   <body>
 
     <h1 id="page-title">Grocery List</h1>
+    
+    <!-- <iframe class="item-choice" id="itemChoices" width=200 style="display: none">
+    </iframe> -->
 
     <div id="list">
       <div class="item-new">
@@ -21,13 +24,23 @@
       </div>
       <div id = "itemsList">
       </div>
-      <button id="findButton" type="button" onclick="findItems()" disabled=true title="Find the groceries.">Find</button>
+      <button id="findButton" class="find" type="button" onclick="findItems()" disabled=true title="Find the groceries.">Find</button>
     </div>
 
   <script>
     var foodList = [];
   
     var canvas = document.getElementById("canvas");
+    
+    window.addEventListener('mousedown', onMouseDown, false);
+    
+    function onMouseDown(event)
+    {
+        for	(j = 0; j < foodList.length; j++) {
+            itemChoices = document.getElementById("itemChoices" + j);
+            itemChoices.style.display = "none";
+        }
+    }
     
     //recreates the list on the page based on foodList
     //sets the correct state for find button
@@ -39,7 +52,9 @@
         for	(i = 0; i < foodList.length; i++) {
             html += htmlForItem(foodList[i], i);
         }
-            
+        
+        //alert(html);
+        
         itemsListDiv.innerHTML = html;
         
         findButton = document.getElementById("findButton");
@@ -61,6 +76,9 @@
         if (food !== "")
         {
             foodList[i] = food;
+            
+            itemChoices = document.getElementById("itemChoices" + i);
+            itemChoices.src = "/itemChoices?item=" + food;
         }
     }
     
@@ -76,9 +94,25 @@
         location.href = "/findItems?item=" + foodList.join("&item=");
     }
     
+    //opens a subpage which displays various options for the item selected in the list
+    //and closes all others
+    function openItemChoices(item, i)
+    {
+        for	(j = 0; j < foodList.length; j++) {
+            itemChoices = document.getElementById("itemChoices" + j);
+            itemChoices.style.display = "none";
+        }
+    
+        itemChoices = document.getElementById("itemChoices" + i);
+        itemChoices.style.display = "inline";
+    }
+    
     function htmlForItem(item, i)
     {
-        return '<div class="item">' +
+        return '<iframe class="item-choice" id="itemChoices' + i +
+        '" src ="/itemChoices?item=' + item + '" style="display: none">' +
+        '</iframe>' +
+        '<div class="item" onclick="openItemChoices(\'' + item + '\',' + i + ')">' +
         '<input class="update-input" type="text" name="content" onKeyDown="updateFoodList(value,' + i + ')"' +
         'onInput="updateFoodList(value,' + i + ')" value="' + item + '" />' +
         '<button id=button"' + i +'" class="del-btn" type="button" onclick="deleteButtonClick('+ i + ')"  title="Delete this grocery item">Delete</button>' +
