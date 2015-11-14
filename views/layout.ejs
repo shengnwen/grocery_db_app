@@ -30,6 +30,8 @@
   <script>
     var foodList = [];
   
+    var _nextId = 0;
+  
     var canvas = document.getElementById("canvas");
     
     window.addEventListener('mousedown', onMouseDown, false);
@@ -42,51 +44,66 @@
         }
     }
     
-    //recreates the list on the page based on foodList
-    //sets the correct state for find button
-    function updatePage()
+    function autoFindButtonDisabled()
     {
-        itemsListDiv = document.getElementById("itemsList");
-            
-        html = "";
-        for	(i = 0; i < foodList.length; i++) {
-            html += htmlForItem(foodList[i], i);
-        }
-        
-        //alert(html);
-        
-        itemsListDiv.innerHTML = html;
-        
         findButton = document.getElementById("findButton");
         findButton.disabled = (foodList.length === 0);
     }
     
+    //adds a new food to the list, and assigns it a unique id
     function addToFoodList(food)
     {
         if (food !== "")
         {
-            foodList.push(food);
+            newItem = { "id": getNewUniqueId(),
+                        "name": food};
+        
+            foodList.push(newItem);
             
-            updatePage();
+            itemsListDiv = document.getElementById("itemsList");
+
+            div = document.createElement("div");
+            div.id = "item" + newItem.id;
+            div.innerHTML = htmlForItem(newItem.name, newItem.id);
+
+            itemsListDiv.insertBefore(div);
         }
+        
+        autoFindButtonDisabled();
     }
     
+    //updates the name of an existing item
     function updateFoodList(food, i)
     {
         if (food !== "")
         {
-            foodList[i] = food;
+            foodList[i].name = food;
             
             itemChoices = document.getElementById("itemChoices" + i);
             itemChoices.src = "/itemChoices?item=" + food;
         }
     }
     
+    //removes an item from the food list
     function deleteButtonClick(i)
     {
-        foodList.splice(i, 1);
+        //find where in foodList the item being deleted is
+        foodListLoc = -1;
+        for	(j = 0; j < foodList.length; j++)
+        {
+            if (foodList[j].id === i)
+            {
+                foodListLoc = j;
+                break;
+            }
+        }
+        foodList.splice(foodListLoc, 1);
+
+        item = document.getElementById("item" + i);
+        itemListDiv = document.getElementById("itemsList");
+        itemListDiv.removeChild(item);
         
-        updatePage();
+        autoFindButtonDisabled();
     }
     
     function findItems()
@@ -94,15 +111,21 @@
         location.href = "/findItems?item=" + foodList.join("&item=");
     }
     
+    //returns a unique int
+    function getNewUniqueId()
+    {
+        return _nextId++;
+    }
+    
     //opens a subpage which displays various options for the item selected in the list
     //and closes all others
-    function openItemChoices(item, i)
+    function openItemChoices(i)
     {
         for	(j = 0; j < foodList.length; j++) {
-            itemChoices = document.getElementById("itemChoices" + j);
+            itemChoices = document.getElementById("itemChoices" + foodList[j].id);
             itemChoices.style.display = "none";
         }
-    
+
         itemChoices = document.getElementById("itemChoices" + i);
         itemChoices.style.display = "inline";
     }
@@ -112,7 +135,7 @@
         return '<iframe class="item-choice" id="itemChoices' + i +
         '" src ="/itemChoices?item=' + item + '" style="display: none">' +
          '</iframe>' +
-        '<div class="item" onclick="openItemChoices(\'' + item + '\',' + i + ')">' +
+        '<div class="item" onclick="openItemChoices(' + i + ')">' +
         '<input class="update-input" type="text" name="content" onKeyDown="updateFoodList(value,' + i + ')"' +
         'onInput="updateFoodList(value,' + i + ')" value="' + item + '" />' +
         '<button id=button"' + i +'" class="del-btn" type="button" onclick="deleteButtonClick('+ i + ')"  title="Delete this grocery item">Delete</button>' +
