@@ -88,13 +88,14 @@ body {
 
 #list {
   border:1;
-  width: 550px;
+  width: 750px;
   margin: auto;
   padding: 20px 0 15px;
   position: relative;
 }
 
 .find {
+    margin-left: 200px;
     clear: left;
 }
 
@@ -105,7 +106,6 @@ body {
   border: 1px solid #eeeeee;
   border-radius: 6px 6px 6px 6px;
   list-style: none outside none;
-  margin: 6px 0 0;
   padding: 8px 9px 9px;
   position: relative;
   text-shadow: 1px 1px 0 white;
@@ -123,8 +123,12 @@ body {
   width: 258px;
 }
 
+.item, .item-new {
+  margin-left: 200px;
+}
+
 .item-choice {
-  height: 250px;
+  height: 500px;
   float: right;
 }
 
