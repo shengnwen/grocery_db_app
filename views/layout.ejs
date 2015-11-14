@@ -44,6 +44,7 @@
         }
     }
     
+    //automatically sets the find button to disabled or enabled, based on whether there is anything in the lsit
     function autoFindButtonDisabled()
     {
         findButton = document.getElementById("findButton");
@@ -66,7 +67,14 @@
             div.id = "item" + newItem.id;
             div.innerHTML = htmlForItem(newItem.name, newItem.id);
 
-            itemsListDiv.insertBefore(div);
+            if (itemsListDiv.hasChildNodes())
+            {
+                itemsListDiv.insertBefore(div, itemsListDiv.childNodes[0]);
+            }
+            else
+            {
+                itemsListDiv.insertBefore(div);
+            }
         }
         
         autoFindButtonDisabled();
