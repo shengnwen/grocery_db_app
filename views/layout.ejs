@@ -15,11 +15,14 @@
     
     <div id="list">
       <div class="item-new">
-        <input class="input" type="text" name="content" onkeydown="if (event.keyCode === 13) 
+        <input id="itemEntry" class="input" type="text" name="content" onkeydown="if (event.keyCode === 13) 
                                                               {
                                                                   addToFoodList(value);
                                                                   value = '';
                                                               }"/>
+        <button id="addButton" class="add" type="button" onclick="addToFoodList(itemEntry.value);
+                                                      itemEntry.value = '';"
+                title="Add an item to the list.">Add</button>
       </div>
       <div id = "itemsList">
       </div>
@@ -36,7 +39,7 @@
     function onMouseDown(event)
     {
         for	(j = 0; j < foodList.length; j++) {
-            itemChoices = document.getElementById("itemChoices" + j);
+            itemChoices = document.getElementById("itemChoices" + foodList[j].id);
             itemChoices.style.display = "none";
         }
     }

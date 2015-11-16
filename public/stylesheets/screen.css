@@ -116,8 +116,13 @@ body {
 .find {
     margin-left: 200px;
     clear: left;
+    display:inline;
 }
 
+.add {
+    position: relative;
+    float: right;
+}
 
 .item, .item-new, .item-choice {
   overflow: hidden;
@@ -140,7 +145,7 @@ body {
 
 .item-new {
   padding: 4px 5px;
-  width: 258px;
+  width: 308px;
 }
 
 .item, .item-new {
