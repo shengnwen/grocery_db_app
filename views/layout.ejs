@@ -12,7 +12,6 @@
     
     <!-- <iframe class="item-choice" id="itemChoices" width=200 style="display: none">
     </iframe> -->
-    
     <div id="list">
       <div class="item-new">
         <input id="itemEntry" class="input" type="text" name="content" onkeydown="if (event.keyCode === 13) 
@@ -26,8 +25,12 @@
       </div>
       <div id = "itemsList">
       </div>
-      <button id="findButton" class="find" type="button" onclick="findItems()" title="Find the groceries.">Find</button>
+      <form id="hiddenItemForm" method="POST" action="/findItems">
+        <input id="findButton" class="find" type="submit" value="Find">
+      </form>
     </div>
+
+  <script src="js/jquery-1.11.3.js"></script>
 
   <script>
     var foodList = [];
@@ -44,7 +47,7 @@
         }
     }
     
-    //automatically sets the find button to disabled or enabled, based on whether there is anything in the lsit
+    //automatically sets the find button to disabled or enabled, based on whether there is anything in the list
     function autoFindButtonDisabled()
     {
         findButton = document.getElementById("findButton");
@@ -151,8 +154,25 @@
         '<button id=button"' + i +'" class="del-btn" type="button" onclick="deleteButtonClick('+ i + ')"  title="Delete this grocery item">Delete</button>' +
         '</div>'
     }
+
+   $(document).ready(function() {
+        $('#hiddenItemForm').submit(function(e) {
+            // for all iframes
+            for (var i = 0; i < foodList.length; i++) {
+                var frame = document.getElementById('itemChoices' + i);
+                var checkboxes = frame.contentWindow.document.getElementsByName('content');
+                // for all checkboxes
+                for (var j = 0; j < checkboxes.length; j++) {
+                    if (checkboxes[j].checked == true) {
+                    $('#hiddenItemForm').append( '<input type="hidden" name="product" value="' + checkboxes[j].value + '"><br>');
+                    }
+                }
+            }
+            return true;
+        });
+    })
+
   </script>  
-    
   </body>
 </html>
 
