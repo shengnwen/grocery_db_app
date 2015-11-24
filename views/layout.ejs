@@ -26,7 +26,7 @@
       <div id = "itemsList">
       </div>
       <form id="hiddenItemForm" method="POST" action="/findItems">
-        <input id="findButton" class="find" type="submit" value="Find">
+        <input id="findButton" class="find" type="submit" disabled="true" value="Find">
       </form>
     </div>
 
@@ -158,6 +158,7 @@
    $(document).ready(function() {
         $('#hiddenItemForm').submit(function(e) {
             $('#hiddenItemForm').html('<input id="findButton" class="find" type="submit" value="Find">');
+            autoFindButtonDisabled();
             // for all iframes
             for (var i = 0; i < foodList.length; i++) {
                 var frame = document.getElementById('itemChoices' + i);
