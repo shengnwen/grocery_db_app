@@ -157,6 +157,7 @@
 
    $(document).ready(function() {
         $('#hiddenItemForm').submit(function(e) {
+            $('#hiddenItemForm').html('<input id="findButton" class="find" type="submit" value="Find">');
             // for all iframes
             for (var i = 0; i < foodList.length; i++) {
                 var frame = document.getElementById('itemChoices' + i);
