@@ -35,10 +35,18 @@ app.get( '/itemChoices', function(req, res) {
 
 app.post('/findItems', function(req, res) {
 //	console.log(req.body.product);
-	res.render( 'itemsSearch', {
-		groceries: req.body.product,
-		cache: false
-	});
+
+    if (typeof req.body.product === "string")
+        res.render( 'itemsSearch', {
+		    groceries: [req.body.product],
+		    cache: false
+	    });
+    else
+	    res.render( 'itemsSearch', {
+		    groceries: req.body.product,
+		    cache: false
+	    });
+	console.log(req.body.product);
 });
 
 http.createServer( app ).listen( app.get( 'port' ), function(){
