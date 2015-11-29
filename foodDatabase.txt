@@ -12,20 +12,7 @@ create table store(
      address       varchar(80),
      gps_x         numeric(7, 4),
      gps_y         numeric(7, 4),
-     phone_num     int,
      website       varchar(2048),
-     mon_open      time,
-     mon_hours     interval,
-     tues_open     time,
-     tues_hours    interval,
-     wed_open      time,
-     wed_hours     interval,
-     thurs_open    time,
-     thurs_hours   interval,
-     friday_open   time,
-     friday_hours  interval,
-     sat_open      time,
-     sat_hours     interval,
      primary key (store_ID)
 );
 

@@ -9,6 +9,7 @@ var express        = require( 'express' );
 var http           = require( 'http' );
 var path           = require( 'path' );
 var engine         = require( 'ejs-locals' );
+var sqlite3        = require('sqlite3').verbose();
 var app    = express();
 
 app.set( 'port', process.env.PORT || 3001 );
@@ -23,8 +24,24 @@ app.get( '/', function(req, res) { res.render( 'layout')});
 
 // send back form
 app.get( '/itemChoices', function(req, res) {
-	res.send('<input type="checkbox" name="content" value="' + req.param("item") + 
-           '" checked> ' + req.param("item")  + '<br>');
+    db = new sqlite3.Database('groceries.sqlite');
+    
+    var x;
+    
+    db.all("SELECT name FROM product WHERE name LIKE '%" + req.param("item") + "%';", function(err, rows) {
+            sideHTML = "";
+            
+            for (var i = 0; i < rows.length; i++)
+            {
+                sideHTML += '<input type="checkbox" name="content" value="' + rows[i].name + 
+                    '" checked> ' + rows[i].name  + '<br>';
+            }
+            
+            res.send(sideHTML);
+        });
+    
+    
+    db.close();
 });
 
 /*app.get( '/findItems', function(req, res) {
@@ -46,7 +63,6 @@ app.post('/findItems', function(req, res) {
 		    groceries: req.body.product,
 		    cache: false
 	    });
-	console.log(req.body.product);
 });
 
 http.createServer( app ).listen( app.get( 'port' ), function(){
