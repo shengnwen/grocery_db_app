@@ -159,6 +159,7 @@
         $('#hiddenItemForm').submit(function(e) {
             $('#hiddenItemForm').html('<input id="findButton" class="find" type="submit" value="Find">');
             autoFindButtonDisabled();
+
             // for all iframes
             for (var i = 0; i < foodList.length; i++) {
                 var frame = document.getElementById('itemChoices' + i);
@@ -166,10 +167,16 @@
                 // for all checkboxes
                 for (var j = 0; j < checkboxes.length; j++) {
                     if (checkboxes[j].checked == true) {
-                        $('#hiddenItemForm').append( '<input type="hidden" name="product" value="' + checkboxes[j].value + '"><br>');
+                        $('#hiddenItemForm').append( '<input type="hidden" name="' + foodList[i] + '" value="' + checkboxes[j].value + '"><br>');
                     }
                 }
             }
+
+            // also send the list of queries
+            for (var i = 0; i < foodList.length; i++) {
+                $('#hiddenItemForm').append('<input type="hidden" name="queries" value="' + foodList[i] + '"><br>');
+            }
+
             return true;
         });
     })
