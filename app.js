@@ -62,6 +62,9 @@ app.post('/findItems', function(req, res) {
     sql = [];
     for (q in qu)
     {
+        if (typeof req.body[qu[q]] === "string")
+            sqlNameMatch = "name = '" + req.body[qu[q]] + "'"
+        else
         sqlNameMatch = "name = '" + req.body[qu[q]].map(function(x){return x.replace(/\'/g, "''")}).join("' OR name = '") + "'";
 
         sql.push("SELECT * FROM (SELECT name, price FROM stocks WHERE (" + sqlNameMatch + ") AND price = (SELECT MIN(price) FROM stocks WHERE " + sqlNameMatch + ") LIMIT 1)");
