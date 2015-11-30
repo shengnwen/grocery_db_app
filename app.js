@@ -53,16 +53,22 @@ app.get( '/itemChoices', function(req, res) {
 app.post('/findItems', function(req, res) {
 //	console.log(req.body.product);
 
-    if (typeof req.body.product === "string")
-        res.render( 'itemsSearch', {
-		    groceries: [req.body.product],
-		    cache: false
-	    });
+    if (typeof req.body.queries === "string")
+        qu = [req.body.queries];
     else
-	    res.render( 'itemsSearch', {
-		    groceries: req.body.product,
-		    cache: false
-	    });
+	    qu = req.body.queries;
+    
+    foodList = [];
+    
+    for (q in qu)
+    {
+        foodList.append(req.body[q]);
+    }
+    
+    res.render( 'itemsSearch', {
+		groceries: foodList,
+		cache: false
+	});
 });
 
 http.createServer( app ).listen( app.get( 'port' ), function(){
