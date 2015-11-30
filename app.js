@@ -62,7 +62,7 @@ app.post('/findItems', function(req, res) {
     
     for (q in qu)
     {
-        foodList.append(req.body[q]);
+        foodList.push(req.body[q]);
     }
     
     res.render( 'itemsSearch', {
