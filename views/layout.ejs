@@ -167,14 +167,14 @@
                 // for all checkboxes
                 for (var j = 0; j < checkboxes.length; j++) {
                     if (checkboxes[j].checked == true) {
-                        $('#hiddenItemForm').append( '<input type="hidden" name="' + foodList[i] + '" value="' + checkboxes[j].value + '"><br>');
+                        $('#hiddenItemForm').append( '<input type="hidden" name="' + foodList[i].name + '" value="' + checkboxes[j].value + '"><br>');
                     }
                 }
             }
 
             // also send the list of queries
             for (var i = 0; i < foodList.length; i++) {
-                $('#hiddenItemForm').append('<input type="hidden" name="queries" value="' + foodList[i] + '"><br>');
+                $('#hiddenItemForm').append('<input type="hidden" name="queries" value="' + foodList[i].name + '"><br>');
             }
 
             return true;

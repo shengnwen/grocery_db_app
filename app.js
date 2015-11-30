@@ -28,7 +28,7 @@ app.get( '/itemChoices', function(req, res) {
     
     var x;
     
-    db.all("SELECT name FROM product WHERE name LIKE '%" + req.param("item") + "%';", function(err, rows) {
+    db.all("SELECT name FROM product WHERE name LIKE '% " + req.param("item") + " %';", function(err, rows) {
             sideHTML = "";
             
             for (var i = 0; i < rows.length; i++)
@@ -51,24 +51,39 @@ app.get( '/itemChoices', function(req, res) {
 });*/
 
 app.post('/findItems', function(req, res) {
-//	console.log(req.body.product);
 
     if (typeof req.body.queries === "string")
         qu = [req.body.queries];
     else
 	    qu = req.body.queries;
     
-    foodList = [];
+    db = new sqlite3.Database('groceries.sqlite');
     
+    sql = [];
     for (q in qu)
     {
-        foodList.push(req.body[q]);
+        sqlNameMatch = "name = '" + req.body[qu[q]].map(function(x){return x.replace(/\'/g, "''")}).join("' OR name = '") + "'";
+
+        sql.push("SELECT * FROM (SELECT name, price FROM stocks WHERE (" + sqlNameMatch + ") AND price = (SELECT MIN(price) FROM stocks WHERE " + sqlNameMatch + ") LIMIT 1)");
     }
     
-    res.render( 'itemsSearch', {
-		groceries: foodList,
-		cache: false
-	});
+    db.all(sql.join(" UNION ") + ";", function(err, rows) {
+            console.log(err);
+            console.log(rows);
+            
+            foodList = [];
+            for (i in rows)
+            {
+                foodList.push(rows[i].name);
+            }
+            
+            res.render( 'itemsSearch', {
+		        groceries: foodList,
+		        cache: false
+	        });
+        });
+    
+    db.close();
 });
 
 http.createServer( app ).listen( app.get( 'port' ), function(){
