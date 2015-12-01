@@ -46,13 +46,14 @@ app.get( '/itemChoices', function(req, res) {
                 }
             }
             
+            sideHTML += "<select>"
             for (var i = 0; i < foodTypes.length; i++)
             {
-                sideHTML += '<div><input type="checkbox" name="filter" value="' + foodTypes[i] + 
-                    '" checked> ' + foodTypes[i]  + '<br></div>';
+                sideHTML += '<option value="' + foodTypes[i] + 
+                    '">' + foodTypes[i]  + '</option><br>';
             }
             
-            sideHTML += "<hr>";
+            sideHTML += "</select><hr>";
             
             for (var i = 0; i < rows.length; i++)
             {
