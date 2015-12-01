@@ -28,8 +28,31 @@ app.get( '/itemChoices', function(req, res) {
     
     var x;
     
-    db.all("SELECT name, food_type_name FROM product WHERE name LIKE '% " + req.param("item") + " %';", function(err, rows) {
-            sideHTML = "<br>Filtering:</br><hr>";
+    cleanedItem = req.param("item").replace(/\'/g, "''");
+    
+    db.all("SELECT name, food_type_name FROM product WHERE name LIKE '% " + cleanedItem + " %'" +
+                                                       "OR name LIKE '" + cleanedItem +" %'" +
+                                                       "OR name LIKE '% " + cleanedItem + "'" +
+                                                       "OR name LIKE '" + cleanedItem + "';",
+        function(err, rows) {
+            sideHTML = "Filtering:<br>";
+            
+            foodTypes = [];
+            for (var i = 0; i < rows.length; i++)
+            {
+                if (foodTypes.indexOf(rows[i].food_type_name) == -1)
+                {
+                    foodTypes.push(rows[i].food_type_name);
+                }
+            }
+            
+            for (var i = 0; i < foodTypes.length; i++)
+            {
+                sideHTML += '<div><input type="checkbox" name="filter" value="' + foodTypes[i] + 
+                    '" checked> ' + foodTypes[i]  + '<br></div>';
+            }
+            
+            sideHTML += "<hr>";
             
             for (var i = 0; i < rows.length; i++)
             {
