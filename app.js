@@ -28,13 +28,13 @@ app.get( '/itemChoices', function(req, res) {
     
     var x;
     
-    db.all("SELECT name FROM product WHERE name LIKE '% " + req.param("item") + " %';", function(err, rows) {
-            sideHTML = "";
+    db.all("SELECT name, food_type_name FROM product WHERE name LIKE '% " + req.param("item") + " %';", function(err, rows) {
+            sideHTML = "<br>Filtering:</br><hr>";
             
             for (var i = 0; i < rows.length; i++)
             {
-                sideHTML += '<input type="checkbox" name="content" value="' + rows[i].name + 
-                    '" checked> ' + rows[i].name  + '<br>';
+                sideHTML += '<div><input type="checkbox" name="content" value="' + rows[i].name + 
+                    '" checked> ' + rows[i].name  + '<br></div>';
             }
             
             res.send(sideHTML);

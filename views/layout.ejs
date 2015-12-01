@@ -162,7 +162,8 @@
 
             // for all iframes
             for (var i = 0; i < foodList.length; i++) {
-                var frame = document.getElementById('itemChoices' + i);
+                var id = foodList[i].id;
+                var frame = document.getElementById('itemChoices' + id);
                 var checkboxes = frame.contentWindow.document.getElementsByName('content');
                 // for all checkboxes
                 for (var j = 0; j < checkboxes.length; j++) {
