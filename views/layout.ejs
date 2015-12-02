@@ -146,7 +146,7 @@
     function htmlForItem(item, i)
     {
         return '<iframe class="item-choice" id="itemChoices' + i +
-        '" src ="/itemChoices?item=' + item + '" style="display: none">' +
+        '" src ="/itemChoices?item=' + item + '" scrolling="yes" style="display: none">' +
          '</iframe>' +
         '<div class="item" onclick="openItemChoices(' + i + ')">' +
         '<input class="update-input" type="text" name="content" onKeyDown="updateFoodList(value,' + i + ')"' +
@@ -168,9 +168,9 @@
                 var dropdown = frame.contentWindow.document.getElementById('food_type_selector');
                 // for all checkboxes
                 for (var j = 0; j < checkboxes.length; j++) {
-                    if (checkboxes[j].checked == true && checkboxes[j].className === dropdown.options[dropdown.selectedIndex].text) {
+                    if (checkboxes[j].checked == true && (checkboxes[j].className === dropdown.options[dropdown.selectedIndex].text
+                                                        ||dropdown.options[dropdown.selectedIndex].text === "All" )) {
                         $('#hiddenItemForm').append( '<input type="hidden" name="' + foodList[i].name + '" value="' + checkboxes[j].value + '"><br>');
-                        alert(checkboxes[j].className);
                     }
                 }
             }

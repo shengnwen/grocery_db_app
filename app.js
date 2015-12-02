@@ -37,6 +37,7 @@ app.get( '/itemChoices', function(req, res) {
         function(err, rows) {
             sideHTML = "Filtering:<br>";
             
+            foodNames = [];
             foodTypes = [];
             for (var i = 0; i < rows.length; i++)
             {
@@ -44,25 +45,14 @@ app.get( '/itemChoices', function(req, res) {
                 {
                     foodTypes.push(rows[i].food_type_name);
                 }
+                foodNames.push({name: rows[i].name, type: rows[i].food_type_name});
             }
             
-            sideHTML += '<select id="food_type_selector">'
-            sideHTML += '<option selected = "selected" value="All">All</option><br>';
-            for (var i = 0; i < foodTypes.length; i++)
-            {
-                sideHTML += '<option value="' + foodTypes[i] + 
-                    '">' + foodTypes[i]  + '</option><br>';
-            }
-            
-            sideHTML += "</select><hr>";
-            
-            for (var i = 0; i < rows.length; i++)
-            {
-                sideHTML += '<input type="checkbox" class="' + rows[i].food_type_name + '" name="content" value="' + rows[i].name + 
-                    '" checked> ' + rows[i].name  + '<br>';
-            }
-            
-            res.send(sideHTML);
+            res.render( 'sideBar', {
+		        foodType: foodTypes,
+		        foodName: foodNames,
+		        cache: false
+	        });
         });
     
     
