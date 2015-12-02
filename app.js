@@ -120,13 +120,18 @@ app.post('/findItems', function(req, res) {
             console.log(rows);
             
             foodList = [];
+            totalPrice = 0;
             for (i in rows)
             {
-                foodList.push(rows[i].name);
+                foodList.push({name: rows[i].name, price: rows[i].price.toFixed(2)});
+                totalPrice += rows[i].price;
             }
+
+            totalPrice = totalPrice.toFixed(2);
             
             res.render( 'itemsSearch', {
 		        groceries: foodList,
+                total: totalPrice,
 		        cache: false
 	        });
         });
