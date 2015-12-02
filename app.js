@@ -46,9 +46,8 @@ app.get( '/itemChoices', function(req, res) {
                 }
             }
             
-            sideHTML += "<select>"
-            sideHTML += '<option value="' + foodTypes[i] + 
-                    '">' + foodTypes[i]  + '</option><br>';
+            sideHTML += '<select id="food_type_selector">'
+            sideHTML += '<option selected = "selected" value="All">All</option><br>';
             for (var i = 0; i < foodTypes.length; i++)
             {
                 sideHTML += '<option value="' + foodTypes[i] + 
@@ -59,8 +58,8 @@ app.get( '/itemChoices', function(req, res) {
             
             for (var i = 0; i < rows.length; i++)
             {
-                sideHTML += '<div><input type="checkbox" name="content" value="' + rows[i].name + 
-                    '" checked> ' + rows[i].name  + '<br></div>';
+                sideHTML += '<input type="checkbox" class="' + rows[i].food_type_name + '" name="content" value="' + rows[i].name + 
+                    '" checked> ' + rows[i].name  + '<br>';
             }
             
             res.send(sideHTML);
@@ -99,18 +98,20 @@ app.post('/findItems', function(req, res) {
             for (i in names)
             {
                 sqlNameMatch += "name = '" + names[i] + "'";
-                count += 1;
-                if (count === 10)
+                if (i != names.length - 1)
                 {
-                    sqlNameMatch += ") OR ("
-                    count = 0;
+                    count += 1;
+                    if (count === 10)
+                    {
+                        sqlNameMatch += ") OR ("
+                        count = 0;
+                    }
+                    else
+                        sqlNameMatch += " OR ";
                 }
-                else if (i != names.length - 1)
-                    sqlNameMatch += " OR ";
             }
             sqlNameMatch += ")"
         }
-        console.log(sqlNameMatch);
 
         sql.push("SELECT * FROM (SELECT name, price FROM stocks WHERE (" + sqlNameMatch + ") AND price = (SELECT MIN(price) FROM stocks WHERE " + sqlNameMatch + ") LIMIT 1)");
     }

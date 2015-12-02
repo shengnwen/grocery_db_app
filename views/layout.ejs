@@ -165,10 +165,12 @@
                 var id = foodList[i].id;
                 var frame = document.getElementById('itemChoices' + id);
                 var checkboxes = frame.contentWindow.document.getElementsByName('content');
+                var dropdown = frame.contentWindow.document.getElementById('food_type_selector');
                 // for all checkboxes
                 for (var j = 0; j < checkboxes.length; j++) {
-                    if (checkboxes[j].checked == true) {
+                    if (checkboxes[j].checked == true && checkboxes[j].className === dropdown.options[dropdown.selectedIndex].text) {
                         $('#hiddenItemForm').append( '<input type="hidden" name="' + foodList[i].name + '" value="' + checkboxes[j].value + '"><br>');
+                        alert(checkboxes[j].className);
                     }
                 }
             }
