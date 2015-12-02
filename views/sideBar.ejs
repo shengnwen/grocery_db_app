@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Grocery List App</title>
+    <link rel='stylesheet' href='/stylesheets/screen.css' />
+  </head>
+  <body>
+    Filtering:<br>
+    <select id="food_type_selector" onchange="onChange(value)">
+    <option selected = "selected" value="All">All</option><br>
+    <% foodType.forEach( function ( product ){ %>
+          <option value="<%= product %>"><%= product %></option><br>
+    <% }); %>
+    </select>
+    <hr>
+    <% foodName.forEach( function ( product ){ %>
+          <div class="<%= product.type %>" name="contentDiv">
+          <input type="checkbox" class="<%= product.type %>" name="content" value="<%= product.name %>" checked><%= product.name %></input>
+          </div>
+    <% }); %>
+    
+    <script>
+    function onChange(v)
+    {
+        var divs = document.getElementsByName('contentDiv');
+    
+        if (v != "All")
+        {
+            for (var j = 0; j < divs.length; j++) {
+                if (divs[j].className === v)
+                {
+                    divs[j].style.display = "block";
+                }
+                else
+                {
+                    divs[j].style.display = "none";
+                }
+            }
+        }
+        else
+        {
+            for (var j = 0; j < divs.length; j++) {
+                divs[j].style.display = "block";
+            }
+        }
+    }
+    </script>
+  </body>
+</html>
