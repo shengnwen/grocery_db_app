@@ -20,12 +20,24 @@
       </div>
 
       <div id="storeList-R">
+        <% groceries.forEach( function ( product ){ %>
+          <div class="item">
+            <label> <%= product.name %> </label>
+          </div>
+        <% }); %>
+      </div>
+
+      <div id="priceList-R">
       <% groceries.forEach( function ( product ){ %>
-        <div class="item">
-          <label> <%= product %> </label>
+        <div class="item-price">
+          <label> $<%= product.price %> </label>
         </div>
       <% }); %>
+      <div class="item-price"> $<%= total %> </div>
       </div>
+
+
+
     </div>
   </body>
 </html>

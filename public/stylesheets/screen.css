@@ -113,6 +113,16 @@ body {
   margin-left: 100px;
 }
 
+#priceList-R {
+  border:1;
+  width: 200px;
+  margin: auto;
+  padding: 20px 0 15px;
+  position: relative;
+  float: left;
+  margin-left: 100px;
+}
+
 .find {
     margin-left: 200px;
     clear: left;
@@ -158,6 +168,23 @@ body {
 .item-choice {
   height: 500px;
   float: right;
+}
+
+.item-price {
+  overflow: hidden;
+  *zoom: 1;
+  background-color: #f9f9f9;
+  border: 1px solid #eeeeee;
+  border-radius: 6px 6px 6px 6px;
+  list-style: none outside none;
+  padding: 8px 9px 9px 9px;
+  position: relative;
+  text-shadow: 1px 1px 0 white;
+  width: 50px;
+  height: 24px;
+  clear: left;
+  margin-left: 180px;
+  margin-bottom: 4px;
 }
 
 .input, .update-input {
