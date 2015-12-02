@@ -47,6 +47,8 @@ app.get( '/itemChoices', function(req, res) {
             }
             
             sideHTML += "<select>"
+            sideHTML += '<option value="' + foodTypes[i] + 
+                    '">' + foodTypes[i]  + '</option><br>';
             for (var i = 0; i < foodTypes.length; i++)
             {
                 sideHTML += '<option value="' + foodTypes[i] + 
@@ -89,7 +91,26 @@ app.post('/findItems', function(req, res) {
         if (typeof req.body[qu[q]] === "string")
             sqlNameMatch = "name = '" + req.body[qu[q]] + "'"
         else
-        sqlNameMatch = "name = '" + req.body[qu[q]].map(function(x){return x.replace(/\'/g, "''")}).join("' OR name = '") + "'";
+        {
+            sqlNameMatch = "(";
+            //sqlNameMatch = "name = '" + req.body[qu[q]].map(function(x){return x.replace(/\'/g, "''")}).join("' OR name = '") + "'";
+            count = 0;
+            names = req.body[qu[q]].map(function(x){return x.replace(/\'/g, "''")})
+            for (i in names)
+            {
+                sqlNameMatch += "name = '" + names[i] + "'";
+                count += 1;
+                if (count === 10)
+                {
+                    sqlNameMatch += ") OR ("
+                    count = 0;
+                }
+                else if (i != names.length - 1)
+                    sqlNameMatch += " OR ";
+            }
+            sqlNameMatch += ")"
+        }
+        console.log(sqlNameMatch);
 
         sql.push("SELECT * FROM (SELECT name, price FROM stocks WHERE (" + sqlNameMatch + ") AND price = (SELECT MIN(price) FROM stocks WHERE " + sqlNameMatch + ") LIMIT 1)");
     }
