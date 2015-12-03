@@ -10,35 +10,69 @@
 
       <div id="storeList-L">
         <form>
-          <div class="item">
-            <input type="radio" name="store" value="target" checked>Target<br>
-          </div>
-          <div class="item">
-            <input type="radio" name="store" value="wegmans" checked>Wegman's<br>
-          </div>
+          <% storeList.forEach( function ( store ) { %>
+            <div class="item">
+              <input type="radio" name="store" onclick="storeSelect(<%= store.storeID %>);" value="<%= store.storeName %>" <% if(store.storeID == 0){ %> checked="checked" <% } %> ><%= store.storeName %><br>
+            </div>
+          <% }); %>
         </form>
       </div>
 
       <div id="storeList-R">
-        <% groceries.forEach( function ( product ){ %>
-          <div class="item">
-            <label> <%= product.name %> </label>
+        <% storeList.forEach( function ( store ){ %>
+          <div id="<%= store.storeID %>" style="display: inline">
+            <% groceries.forEach( function ( product ){ %>
+              <% if (product.storeName == store.storeName) { %>
+                <div class="item">
+                  <label> <%= product.productName %> </label>
+                </div>
+              <% } %>
+            <% }); %>
           </div>
         <% }); %>
       </div>
 
       <div id="priceList-R">
-      <% groceries.forEach( function ( product ){ %>
-        <div class="item-price">
-          <label> $<%= product.price %> </label>
-        </div>
-      <% }); %>
-      <div class="item-price"> $<%= total %> </div>
+        <% storeList.forEach( function ( store ){ %>
+          <div id="<%= store.storeID %>Price" style="display: none">
+            <% groceries.forEach( function ( product ){ %>
+              <% if (product.storeName == store.storeName) { %>
+                <div class="item">
+                  <label> <%= product.price %> </label>
+                </div>
+              <% } %>
+            <% }); %>
+           <div class="item"><label> <%= store.totalPrice %> </label></div>
+          </div>
+        <% }); %>
       </div>
-
-
-
     </div>
+
+    <script>
+      function storeSelect(value) {
+        document.getElementById(value).style.display = "inline";
+
+        var storeDivs = document.getElementById("storeList-R").childNodes;
+        for (var i = 1; i < storeDivs.length; i += 2) {
+          if (value != storeDivs[i].id) {
+            storeDivs[i].style.display = "none";
+          }
+        }
+
+        document.getElementById(value + "Price").style.display = "inline";
+
+        var priceDivs = document.getElementById("priceList-R").childNodes;
+        for (var i = 1; i < priceDivs.length; i += 2) {
+          if (value + "Price" != priceDivs[i].id) {
+              priceDivs[i].style.display = "none";
+          }
+        }
+
+      }
+
+      storeSelect("0");
+
+    </script>
   </body>
 </html>
                                          

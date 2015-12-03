@@ -59,12 +59,6 @@ app.get( '/itemChoices', function(req, res) {
     db.close();
 });
 
-/*app.get( '/findItems', function(req, res) {
-	res.render( 'itemsSearch', {
-		groceries: req.param("item")
-	});
-});*/
-
 app.post('/findItems', function(req, res) {
 
     if (typeof req.body.queries === "string")
@@ -78,7 +72,7 @@ app.post('/findItems', function(req, res) {
     for (q in qu)
     {
         if (typeof req.body[qu[q]] === "string")
-            sqlNameMatch = "name = '" + req.body[qu[q]] + "'"
+            sqlNameMatch = "stocks.name = '" + req.body[qu[q]] + "'"
         else
         {
             sqlNameMatch = "(";
@@ -87,7 +81,7 @@ app.post('/findItems', function(req, res) {
             names = req.body[qu[q]].map(function(x){return x.replace(/\'/g, "''")})
             for (i in names)
             {
-                sqlNameMatch += "name = '" + names[i] + "'";
+                sqlNameMatch += "stocks.name = '" + names[i] + "'";
                 if (i != names.length - 1)
                 {
                     count += 1;
@@ -103,26 +97,47 @@ app.post('/findItems', function(req, res) {
             sqlNameMatch += ")"
         }
 
-        sql.push("SELECT * FROM (SELECT name, price FROM stocks WHERE (" + sqlNameMatch + ") AND price = (SELECT MIN(price) FROM stocks WHERE " + sqlNameMatch + ") LIMIT 1)");
+        var numStores = 2; // How to get this number?
+        for (var i = 0; i < numStores; i++) {
+            sql.push("SELECT * FROM (SELECT store.name AS storeName, store.store_ID, stocks.name AS productName, price FROM stocks INNER JOIN store ON stocks.store_ID=store.store_ID WHERE (" + sqlNameMatch + ") AND price = (SELECT MIN(price) FROM stocks WHERE stocks.store_id = " + i + " AND (" + sqlNameMatch + ")) LIMIT 1)");
+        }
+
+        // sql.push("SELECT * FROM (SELECT name, price FROM stocks WHERE (" + sqlNameMatch + ") AND price = (SELECT MIN(price) FROM stocks WHERE " + sqlNameMatch + ") LIMIT 1)");
+
     }
-    
+
     db.all(sql.join(" UNION ") + ";", function(err, rows) {
             console.log(err);
-            console.log(rows);
+            //console.log(rows);
             
             foodList = [];
-            totalPrice = 0;
+            stores = [];
+            stores_ids_prices = [];
+
             for (i in rows)
             {
-                foodList.push({name: rows[i].name, price: rows[i].price.toFixed(2)});
-                totalPrice += rows[i].price;
+                foodList.push({storeName: rows[i].storeName, productName: rows[i].productName, price: rows[i].price.toFixed(2)});
+
+                if (stores.indexOf(rows[i].storeName) < 0) {
+                    stores.push(rows[i].storeName, rows[i].store_ID);
+                }
             }
 
-            totalPrice = totalPrice.toFixed(2);
-            
+            for (var i = 0; i < stores.length; i += 2) {
+                var totalPrice = 0;
+                for (r in rows) {
+                    if (rows[r].storeName == stores[i]) {
+                        totalPrice += rows[r].price;
+                    }
+                }
+                stores_ids_prices.push({storeName: stores[i], storeID: stores[i+1], totalPrice: totalPrice.toFixed(2)});
+            }
+
+            console.log(stores_ids_prices);
+
             res.render( 'itemsSearch', {
 		        groceries: foodList,
-                total: totalPrice,
+                storeList: stores_ids_prices,
 		        cache: false
 	        });
         });
