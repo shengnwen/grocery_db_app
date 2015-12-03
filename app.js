@@ -29,11 +29,22 @@ app.get( '/itemChoices', function(req, res) {
     var x;
     
     cleanedItem = req.param("item").replace(/\'/g, "''");
+    words = cleanedItem.split(" ");
     
-    db.all("SELECT name, food_type_name FROM product WHERE name LIKE '% " + cleanedItem + " %'" +
-                                                       "OR name LIKE '" + cleanedItem +" %'" +
-                                                       "OR name LIKE '% " + cleanedItem + "'" +
-                                                       "OR name LIKE '" + cleanedItem + "';",
+    sqlPieces = [];
+
+    for (i in words)
+    {
+        sqlPieces.push("SELECT name, food_type_name FROM product WHERE name LIKE '% " + words[i] + " %'" +
+                                                       " OR name LIKE '" + words[i] +" %'" +
+                                                       " OR name LIKE '% " + words[i] + "'" +
+                                                       " OR name LIKE '" + words[i] + "'")
+    }
+    console.log(sqlPieces);
+    
+    sql = sqlPieces.join(" INTERSECT ") + ";";
+    console.log(sql);
+    db.all(sql,
         function(err, rows) {
             sideHTML = "Filtering:<br>";
             
@@ -76,7 +87,7 @@ app.post('/findItems', function(req, res) {
         else
         {
             sqlNameMatch = "(";
-            //sqlNameMatch = "name = '" + req.body[qu[q]].map(function(x){return x.replace(/\'/g, "''")}).join("' OR name = '") + "'";
+
             count = 0;
             names = req.body[qu[q]].map(function(x){return x.replace(/\'/g, "''")})
             for (i in names)
@@ -99,6 +110,7 @@ app.post('/findItems', function(req, res) {
 
         var numStores = 2; // How to get this number?
         for (var i = 0; i < numStores; i++) {
+            //"SELECT * FROM (SELECT store.name AS storeName, store.store_ID, stocks.name AS productName, price FROM stocks INNER JOIN store ON stocks.store_ID=store.store_ID WHERE (" + sqlNameMatch + ") AND price = (SELECT MIN(price) FROM stocks WHERE stocks.store_id = " + i + " AND (" + sqlNameMatch + ")) LIMIT 1)"
             sql.push("SELECT * FROM (SELECT store.name AS storeName, store.store_ID, stocks.name AS productName, price FROM stocks INNER JOIN store ON stocks.store_ID=store.store_ID WHERE (" + sqlNameMatch + ") AND price = (SELECT MIN(price) FROM stocks WHERE stocks.store_id = " + i + " AND (" + sqlNameMatch + ")) LIMIT 1)");
         }
 
