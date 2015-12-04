@@ -110,8 +110,8 @@ app.post('/findItems', function(req, res) {
         var numStores = 2; // How to get this number?
         for (var i = 0; i < numStores; i++) {
             sql.push("SELECT * FROM \
-                        (SELECT store.name AS storeName, store.store_ID, stocks.name AS productName, price \
-                        FROM stocks INNER JOIN store ON stocks.store_ID=store.store_ID \
+                        (SELECT '" + qu[q] + "' AS query, store.name AS storeName, store.store_ID, stocks.name AS productName, price \
+                        FROM stocks INNER JOIN store ON stocks.store_ID = store.store_ID \
                         WHERE (" + sqlNameMatch + ") AND stocks.store_ID = " + i + " \
                         ORDER BY price ASC \
                         LIMIT 1)");
@@ -122,7 +122,7 @@ app.post('/findItems', function(req, res) {
     db.all(sql.join(" UNION ") + ";", function(err, rows) {
             console.log(err);
             console.log(rows);
-            
+
             foodList = [];
             stores = [];
             stores_ids_prices = [];

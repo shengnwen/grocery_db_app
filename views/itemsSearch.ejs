@@ -38,15 +38,14 @@
             <% groceries.forEach( function ( product ){ %>
               <% if (product.storeName == store.storeName) { %>
                 <div class="item">
-                  <label> <%= product.price %> </label>
+                  <label> $<%= product.price %> </label>
                 </div>
               <% } %>
             <% }); %>
-           <div class="item"><label> <%= store.totalPrice %> </label></div>
+           <div class="item"><label> $<%= store.totalPrice %> </label></div>
           </div>
         <% }); %>
       </div>
-    </div>
 
     <script>
       function storeSelect(value) {
