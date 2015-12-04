@@ -82,7 +82,7 @@ app.post('/findItems', function(req, res) {
     for (q in qu)
     {
         if (typeof req.body[qu[q]] === "string")
-            sqlNameMatch = "stocks.name = '" + req.body[qu[q]] + "'"
+            sqlNameMatch = "productName = '" + req.body[qu[q]] + "'"
         else
         {
             sqlNameMatch = "(";
@@ -109,32 +109,10 @@ app.post('/findItems', function(req, res) {
 
         var numStores = 2; // How to get this number?
         for (var i = 0; i < numStores; i++) {
-            sql.push("SELECT * FROM (\
-                SELECT store.name AS storeName, store.store_ID, stocks.name AS productName, price \
-                FROM stocks INNER JOIN store ON stocks.store_ID = store.store_ID \
-                WHERE (" + sqlNameMatch + ") AND stocks.store_id = " + i + "  \
-                GROUP BY store.store_ID \
-                HAVING price = MIN(price) \
-                LIMIT 1)")
-            /*"SELECT * FROM( \
-                SELECT store.name AS storeName, store.store_ID, stocks.name AS productName, price \
-                FROM stocks INNER JOIN store ON stocks.store_ID=store.store_ID \
-                WHERE (" + sqlNameMatch + ") AND \
-                    price = (SELECT MIN(price) \
-                        FROM stocks \
-                        WHERE stocks.store_id = " + i + " AND (" + sqlNameMatch + ")) LIMIT 1)"*/
-            //sql.push("SELECT * FROM (SELECT store.name AS storeName, store.store_ID, stocks.name AS productName, price FROM stocks INNER JOIN store ON stocks.store_ID=store.store_ID WHERE (" + sqlNameMatch + ") AND price = (SELECT name, store_id, MIN(price) FROM stocks WHERE stocks.store_id = " + i + " AND (" + sqlNameMatch + ") GROUP BY name) LIMIT 1)");
-            //sql.push("SELECT store.name AS storeName, store.store_ID, stocks.name AS productName, price FROM (stocks INNER JOIN store ON stocks.store_ID=store.store_ID) NATURAL JOIN WHERE(" + sqlNameMatch + ") AND price = (SELECT store_id, price FROM stocks WHERE (" + sqlNameMatch + ") GROUP BY store_id)");
-            /*sql.push("SELECT store.name AS storeName, store.store_ID, stocks.name AS productName, price \
-            FROM stocks INNER JOIN store ON stocks.store_ID=store.store_ID) \
-            WHERE (" + sqlNameMatch + ") ORDER BY price ASC");*/
-            //sql.push("SELECT store_id, MIN(price) FROM stocks WHERE name in (SELECT name, price FROM stocks WHERE (" + sqlNameMatch + ")) GROUP BY store_id");
-            //sql.push("SELECT MIN(price),store_id, name FROM (SELECT name, store_id, price FROM stocks WHERE (" + sqlNameMatch + ")) ") group by store_id, name;
+            sql.push("SELECT * FROM (SELECT store.name AS storeName, store.store_ID, stocks.name AS productName, price FROM stocks INNER JOIN store ON stocks.store_ID=store.store_ID WHERE (" + sqlNameMatch + ") AND price = (SELECT MIN(price) FROM stocks WHERE stocks.store_id = " + i + " AND (" + sqlNameMatch + ")) LIMIT 1)");
         }
-
-        // sql.push("SELECT * FROM (SELECT name, price FROM stocks WHERE (" + sqlNameMatch + ") AND price = (SELECT MIN(price) FROM stocks WHERE " + sqlNameMatch + ") LIMIT 1)");
-
     }
+    console.log(sql.join(" UNION ") + ";");
 
     db.all(sql.join(" UNION ") + ";", function(err, rows) {
             console.log(err);
