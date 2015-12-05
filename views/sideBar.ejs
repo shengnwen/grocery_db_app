@@ -7,9 +7,9 @@
   <body>
     Filtering:<br>
     <select id="food_type_selector" onchange="onChange(value)">
-    <option selected = "selected" value="All">All</option><br>
+    <option <%if (selected == "All") {%> selected = "selected" <%}%> value="All">All</option><br>
     <% foodType.forEach( function ( product ){ %>
-          <option value="<%= product %>"><%= product %></option><br>
+          <option <%if (selected == product) {%> selected = "selected" <%}%> value="<%= product %>"><%= product %></option><br>
     <% }); %>
     </select>
     <hr>

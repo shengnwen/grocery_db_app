@@ -31,6 +31,8 @@ app.get( '/itemChoices', function(req, res) {
     cleanedItem = req.param("item").replace(/\'/g, "''").trim();
     words = cleanedItem.split(" ");
     
+    selected = req.param("selected");
+    
     sqlPieces = [];
 
     for (i in words)
@@ -51,14 +53,27 @@ app.get( '/itemChoices', function(req, res) {
             foodTypes = [];
             for (var i = 0; i < rows.length; i++)
             {
-                if (foodTypes.indexOf(rows[i].food_type_name) == -1)
+                if (foodTypes.indexOf(rows[i].food_type_name) === -1)
                 {
                     foodTypes.push(rows[i].food_type_name);
                 }
                 foodNames.push({name: rows[i].name, type: rows[i].food_type_name});
             }
             
+            if (foodTypes.length !== 0)
+            {
+                if (foodTypes.indexOf(selected) === -1)
+                {
+                    selected = "All";
+                }
+            }
+            else
+            {
+                foodTypes.push(selected);
+            }
+            
             res.render( 'sideBar', {
+                selected: selected,
 		        foodType: foodTypes,
 		        foodName: foodNames,
 		        cache: false

@@ -90,8 +90,12 @@
         {
             foodList[i].name = food;
             
+            //to prevent the reloading of the iframe page from resetting the filtering
+            var frame = document.getElementById('itemChoices' + foodList[i].id);
+            var dropdown = frame.contentWindow.document.getElementById('food_type_selector');
+
             itemChoices = document.getElementById("itemChoices" + i);
-            itemChoices.src = "/itemChoices?item=" + food;
+            itemChoices.src = "/itemChoices?item=" + food + "&selected=" + dropdown.options[dropdown.selectedIndex].text;
         }
     }
     
