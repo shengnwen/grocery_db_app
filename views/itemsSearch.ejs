@@ -8,6 +8,13 @@
     <div id="layout">
       <h1 id="page-title">Grocery List</h1>
 
+      <% if (storeList.length == 0) { %>
+         <div class="item" style="margin-left: auto;margin-right: auto;background-color:#ff8080;".>
+            <label>  No results found for your queries. </label>
+         </div>
+      <% }; %>
+      
+      
       <div id="storeList-L">
         <form>
           <% storeList.forEach( function ( store ) { %>

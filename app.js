@@ -28,7 +28,7 @@ app.get( '/itemChoices', function(req, res) {
     
     var x;
     
-    cleanedItem = req.param("item").replace(/\'/g, "''");
+    cleanedItem = req.param("item").replace(/\'/g, "''").trim();
     words = cleanedItem.split(" ");
     
     sqlPieces = [];
@@ -187,6 +187,15 @@ app.post('/findItems', function(req, res) {
             });
     
         db.close();
+    }
+    else
+    {
+        res.render( 'itemsSearch', {
+                    groceries: [],
+                    missingGroceries: [],
+                    storeList: [],
+                    cache: false
+                });
     }
 });
 
