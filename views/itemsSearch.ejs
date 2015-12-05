@@ -44,6 +44,12 @@
       <div id="priceList-R">
         <% storeList.forEach( function ( store ){ %>
           <div id="<%= store.storeID %>Price" style="display: none">
+            <% missingGroceries.forEach( function ( missing ){ %>
+                <% if (missing.storeID == store.storeID) { %>
+                    <div class="item" style="visibility:hidden;">
+                    </div>
+                <% } %>
+            <% }); %>
             <% groceries.forEach( function ( product ){ %>
               <% if (product.storeName == store.storeName) { %>
                 <div class="item">

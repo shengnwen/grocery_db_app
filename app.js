@@ -78,102 +78,116 @@ app.post('/findItems', function(req, res) {
     
     db = new sqlite3.Database('groceries.sqlite');
     
-    sql = [];
+    var sql = [];
+    var sqlNameMatch = "";
     for (q in qu)
     {
+        sqlNameMatch = "";
+    
         if (typeof req.body[qu[q]] === "string")
             sqlNameMatch = "productName = '" + req.body[qu[q]] + "'"
         else
         {
-            sqlNameMatch = "(";
-
-            count = 0;
-            names = req.body[qu[q]].map(function(x){return x.replace(/\'/g, "''")})
-            for (i in names)
+            if (req.body[qu[q]])
             {
-                sqlNameMatch += "stocks.name = '" + names[i] + "'";
-                if (i != names.length - 1)
+                sqlNameMatch = "(";
+
+                count = 0;
+                names = req.body[qu[q]].map(function(x){return x.replace(/\'/g, "''")})
+                for (i in names)
                 {
-                    count += 1;
-                    if (count === 10)
+                    sqlNameMatch += "stocks.name = '" + names[i] + "'";
+                    if (i != names.length - 1)
                     {
-                        sqlNameMatch += ") OR ("
-                        count = 0;
+                        count += 1;
+                        if (count === 10)
+                        {
+                            sqlNameMatch += ") OR ("
+                            count = 0;
+                        }
+                        else
+                            sqlNameMatch += " OR ";
                     }
-                    else
-                        sqlNameMatch += " OR ";
                 }
+                sqlNameMatch += ")"
             }
-            sqlNameMatch += ")"
         }
 
-        var numStores = 2; // How to get this number?
-        for (var i = 0; i < numStores; i++) {
-            sql.push("SELECT * FROM \
-                        (SELECT '" + qu[q] + "' AS query, store.name AS storeName, store.store_ID, stocks.name AS productName, price \
-                        FROM stocks INNER JOIN store ON stocks.store_ID = store.store_ID \
-                        WHERE (" + sqlNameMatch + ") AND stocks.store_ID = " + i + " \
-                        ORDER BY price ASC \
-                        LIMIT 1)");
+        if (sqlNameMatch !== "")
+        {
+            var numStores = 2; // How to get this number?
+            for (var i = 0; i < numStores; i++) {
+                sql.push("SELECT * FROM \
+                            (SELECT '" + qu[q] + "' AS query, store.name AS storeName, store.store_ID, stocks.name AS productName, price \
+                            FROM stocks INNER JOIN store ON stocks.store_ID = store.store_ID \
+                            WHERE (" + sqlNameMatch + ") AND stocks.store_ID = " + i + " \
+                            ORDER BY price ASC \
+                            LIMIT 1)");
+            }
         }
     }
+    
+    if (sql.length !== 0)
+    {
+        console.log(sql.join(" UNION ") + ";");
 
-    db.all(sql.join(" UNION ") + ";", function(err, rows) {
-            console.log(err);
-            console.log(rows);
+        db.all(sql.join(" UNION ") + ";", function(err, rows) {
+                console.log(err);
+                console.log(rows);
 
-            foodList = [];
-            stores = [];
-            stores_ids_prices = [];
+                foodList = [];
+                stores = [];
+                stores_ids_prices = [];
                 
-            for (var i in rows)
-            {
-                foodList.push({query: rows[i].query, storeName: rows[i].storeName, productName: rows[i].productName, price: rows[i].price.toFixed(2)});
+                for (var i in rows)
+                {
+                    foodList.push({query: rows[i].query, storeName: rows[i].storeName, productName: rows[i].productName, price: rows[i].price.toFixed(2)});
 
-                if (stores.indexOf(rows[i].storeName) < 0) {
-                    stores.push(rows[i].storeName, rows[i].store_ID);
-                }
-            }
-            
-            var notAtStore = [];
-            
-            for (var i = 0; i < stores.length; i += 2) {
-                var totalPrice = 0;
-                for (r in rows) {
-                    if (rows[r].storeName == stores[i]) {
-                        totalPrice += rows[r].price;
+                    if (stores.indexOf(rows[i].storeName) < 0) {
+                        stores.push(rows[i].storeName, rows[i].store_ID);
                     }
                 }
-                
-                var foodAtStore = foodList.filter(function(x){return (x.storeName === stores[i]);});
-                hasAll = (qu.length === foodAtStore.length)
-                
-                var queriesAtStore = foodAtStore.map(function(x){return x.query});
-                notAtStore = notAtStore.concat(qu.filter(
-                        function(x){return queriesAtStore.indexOf(x) === -1;}).map(
-                            function(x){return {storeID: stores[i + 1], query: x};}));
-                
-                stores_ids_prices.push({storeName: stores[i], storeID: stores[i+1],
-                                    totalPrice: totalPrice.toFixed(2), hasAll: hasAll});
-            }       
-             
-            var  totalPriceComp = function(a, b)
-            {
-                return parseFloat(a.totalPrice) - parseFloat(b.totalPrice);
-            }
             
-            stores_ids_prices = stores_ids_prices.filter(function(x){return x.hasAll;}).sort(totalPriceComp).concat(
-                stores_ids_prices.filter(function(x){return !x.hasAll;}).sort(totalPriceComp));
+                var notAtStore = [];
+            
+                for (var i = 0; i < stores.length; i += 2) {
+                    var totalPrice = 0;
+                    for (r in rows) {
+                        if (rows[r].storeName == stores[i]) {
+                            totalPrice += rows[r].price;
+                        }
+                    }
+                
+                    var foodAtStore = foodList.filter(function(x){return (x.storeName === stores[i]);});
+                    hasAll = (qu.length === foodAtStore.length)
+                
+                    var queriesAtStore = foodAtStore.map(function(x){return x.query});
+                    notAtStore = notAtStore.concat(qu.filter(
+                            function(x){return queriesAtStore.indexOf(x) === -1;}).map(
+                                function(x){return {storeID: stores[i + 1], query: x};}));
+                
+                    stores_ids_prices.push({storeName: stores[i], storeID: stores[i+1],
+                                        totalPrice: totalPrice.toFixed(2), hasAll: hasAll});
+                }       
+             
+                var  totalPriceComp = function(a, b)
+                {
+                    return parseFloat(a.totalPrice) - parseFloat(b.totalPrice);
+                }
+            
+                stores_ids_prices = stores_ids_prices.filter(function(x){return x.hasAll;}).sort(totalPriceComp).concat(
+                    stores_ids_prices.filter(function(x){return !x.hasAll;}).sort(totalPriceComp));
 
-            res.render( 'itemsSearch', {
-		        groceries: foodList,
-		        missingGroceries: notAtStore,
-                storeList: stores_ids_prices,
-		        cache: false
-	        });
-        });
+                res.render( 'itemsSearch', {
+                    groceries: foodList,
+                    missingGroceries: notAtStore,
+                    storeList: stores_ids_prices,
+                    cache: false
+                });
+            });
     
-    db.close();
+        db.close();
+    }
 });
 
 http.createServer( app ).listen( app.get( 'port' ), function(){
