@@ -23,6 +23,13 @@
       <div id="storeList-R">
         <% storeList.forEach( function ( store ){ %>
           <div id="<%= store.storeID %>" style="display: inline">
+            <% missingGroceries.forEach( function ( missing ){ %>
+                <% if (missing.storeID == store.storeID) { %>
+                    <div class="item" style="background-color:#ff8080;".>
+                    <label> Could not find an item for '<%= missing.query %>'. </label>
+                    </div>
+                <% } %>
+            <% }); %>
             <% groceries.forEach( function ( product ){ %>
               <% if (product.storeName == store.storeName) { %>
                 <div class="item">

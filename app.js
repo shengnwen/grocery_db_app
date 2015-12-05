@@ -134,7 +134,9 @@ app.post('/findItems', function(req, res) {
                     stores.push(rows[i].storeName, rows[i].store_ID);
                 }
             }
-
+            
+            var notAtStore = [];
+            
             for (var i = 0; i < stores.length; i += 2) {
                 var totalPrice = 0;
                 for (r in rows) {
@@ -147,12 +149,14 @@ app.post('/findItems', function(req, res) {
                 hasAll = (qu.length === foodAtStore.length)
                 
                 var queriesAtStore = foodAtStore.map(function(x){return x.query});
-                var notAtStore = qu.filter(function(x){return queriesAtStore.indexOf(x) === -1;});
+                notAtStore = notAtStore.concat(qu.filter(
+                        function(x){return queriesAtStore.indexOf(x) === -1;}).map(
+                            function(x){return {storeID: stores[i + 1], query: x};}));
                 
                 stores_ids_prices.push({storeName: stores[i], storeID: stores[i+1],
                                     totalPrice: totalPrice.toFixed(2), hasAll: hasAll});
-            }
-                        
+            }       
+             
             var  totalPriceComp = function(a, b)
             {
                 return parseFloat(a.totalPrice) - parseFloat(b.totalPrice);
@@ -163,6 +167,7 @@ app.post('/findItems', function(req, res) {
 
             res.render( 'itemsSearch', {
 		        groceries: foodList,
+		        missingGroceries: notAtStore,
                 storeList: stores_ids_prices,
 		        cache: false
 	        });
