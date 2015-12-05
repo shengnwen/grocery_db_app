@@ -117,7 +117,6 @@ app.post('/findItems', function(req, res) {
                         LIMIT 1)");
         }
     }
-    console.log(sql.join(" UNION ") + ";");
 
     db.all(sql.join(" UNION ") + ";", function(err, rows) {
             console.log(err);
@@ -126,8 +125,8 @@ app.post('/findItems', function(req, res) {
             foodList = [];
             stores = [];
             stores_ids_prices = [];
-
-            for (i in rows)
+                
+            for (var i in rows)
             {
                 foodList.push({storeName: rows[i].storeName, productName: rows[i].productName, price: rows[i].price.toFixed(2)});
 
