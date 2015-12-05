@@ -151,11 +151,15 @@ app.post('/findItems', function(req, res) {
                                     totalPrice: totalPrice.toFixed(2), hasAll: hasAll});
             }
             
-            stores_ids_prices.sort(function(a, b)
-                                    {
-                                        return parseFloat(a.totalPrice) - parseFloat(b.totalPrice);
-                                    });
-            console.log(stores_ids_prices);
+            
+            
+            var  totalPriceComp = function(a, b)
+            {
+                return parseFloat(a.totalPrice) - parseFloat(b.totalPrice);
+            }
+            
+            stores_ids_prices = stores_ids_prices.filter(function(x){return x.hasAll;}).sort(totalPriceComp).concat(
+                stores_ids_prices.filter(function(x){return !x.hasAll;}).sort(totalPriceComp));
 
             res.render( 'itemsSearch', {
 		        groceries: foodList,
