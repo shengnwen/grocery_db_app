@@ -20,7 +20,7 @@
           <% storeList.forEach( function ( store ) { %>
             <div class="item" <% if(store.hasAll == false){ %>style="background-color:#ff8080;"<%}%>>
               <input type="radio" name="store" onclick="storeSelect(<%= store.storeID %>);" value="<%= store.storeName %>"
-              <% if(store.storeID == 0){ %> checked="checked" <% } %> > <span style="padding-left:8px;"><%= store.storeName %> </span>
+              <% if(store.storeID == initiallySelected){ %> checked="checked" <% } %> > <span style="padding-left:8px;"><%= store.storeName %> </span>
               <span style="position:absolute;right:10px">Total: $<%= store.totalPrice %></span><br>
             </div>
           <% }); %>
@@ -91,7 +91,7 @@
 
       }
 
-      storeSelect("0");
+      storeSelect("<%= initiallySelected %>");
 
     </script>
   </body>

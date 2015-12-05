@@ -179,6 +179,7 @@ app.post('/findItems', function(req, res) {
                     stores_ids_prices.filter(function(x){return !x.hasAll;}).sort(totalPriceComp));
 
                 res.render( 'itemsSearch', {
+                    initiallySelected: stores_ids_prices[0].storeID,
                     groceries: foodList,
                     missingGroceries: notAtStore,
                     storeList: stores_ids_prices,
@@ -191,6 +192,7 @@ app.post('/findItems', function(req, res) {
     else
     {
         res.render( 'itemsSearch', {
+                    initiallySelected: 0,
                     groceries: [],
                     missingGroceries: [],
                     storeList: [],
