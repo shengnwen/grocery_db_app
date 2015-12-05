@@ -68,7 +68,6 @@ app.get( '/itemChoices', function(req, res) {
     console.log(sql);
     db.all(sql,
         function(err, rows) {
-            console.log(rows.length);
             sideHTML = "Filtering:<br>";
             console.log(err);
             foodNames = [];
