@@ -28,27 +28,49 @@ app.get( '/itemChoices', function(req, res) {
     
     var x;
     
-    cleanedItem = req.param("item").replace(/\'/g, "''").trim();
-    words = cleanedItem.split(" ");
+    var cleanedItem = req.param("item").replace(/\'/g, "''").trim();
+    console.log(cleanedItem);
+    var words = cleanedItem.replace(/[\s]*NOT[\s]+\S+/g, "").split(" ");
+    console.log(words);
+    var notWords = cleanedItem.split(" ").filter(function(x){return words.indexOf(x) === -1 && x !== "NOT";});
+    console.log(notWords);
     
     selected = req.param("selected");
     
-    sqlPieces = [];
+    sqlAndPieces = [];
+    sqlNotPieces = [];
 
     for (i in words)
     {
-        sqlPieces.push("SELECT name, food_type_name FROM product WHERE name LIKE '% " + words[i] + " %'" +
+        sqlAndPieces.push("SELECT name, food_type_name FROM product WHERE name LIKE '% " + words[i] + " %'" +
                                                        " OR name LIKE '" + words[i] +" %'" +
                                                        " OR name LIKE '% " + words[i] + "'" +
-                                                       " OR name LIKE '" + words[i] + "'")
+                                                       " OR name LIKE '" + words[i] + "'");
     }
     
-    sql = sqlPieces.join(" INTERSECT ") + ";";
+    if (notWords.length !== 0)
+    {
+        for (i in notWords)
+        {
+            sqlNotPieces.push("SELECT name, food_type_name FROM product WHERE name LIKE '% " + notWords[i] + " %'" +
+                                                           " OR name LIKE '" + notWords[i] +" %'" +
+                                                           " OR name LIKE '% " + notWords[i] + "'" +
+                                                           " OR name LIKE '" + notWords[i] + "'")
+        }
+        
+        sqlNot = " EXCEPT SELECT * FROM (" + sqlNotPieces.join(" UNION ") + ")";
+    }
+    else
+        sqlNot = ""
+    
+    sql = "SELECT * FROM (" + sqlAndPieces.join(" INTERSECT ") + ")" + sqlNot + ";";
 
+    console.log(sql);
     db.all(sql,
         function(err, rows) {
+            console.log(rows.length);
             sideHTML = "Filtering:<br>";
-            
+            console.log(err);
             foodNames = [];
             foodTypes = [];
             for (var i = 0; i < rows.length; i++)

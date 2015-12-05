@@ -112,10 +112,10 @@
         
         foodList.splice(foodListLoc, 1);
 
-        item = document.getElementById("item" + i);
-        itemListDiv = document.getElementById("itemsList");
+        var item = document.getElementById("item" + i);
+        var itemListDiv = document.getElementById("itemsList");
         itemListDiv.removeChild(item);
-        
+                
         autoFindButtonDisabled();
     }
     
