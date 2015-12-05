@@ -128,7 +128,7 @@ app.post('/findItems', function(req, res) {
                 
             for (var i in rows)
             {
-                foodList.push({storeName: rows[i].storeName, productName: rows[i].productName, price: rows[i].price.toFixed(2)});
+                foodList.push({query: rows[i].query, storeName: rows[i].storeName, productName: rows[i].productName, price: rows[i].price.toFixed(2)});
 
                 if (stores.indexOf(rows[i].storeName) < 0) {
                     stores.push(rows[i].storeName, rows[i].store_ID);
@@ -143,16 +143,16 @@ app.post('/findItems', function(req, res) {
                     }
                 }
                 
+                var foodAtStore = foodList.filter(function(x){return (x.storeName === stores[i]);});
+                hasAll = (qu.length === foodAtStore.length)
                 
-                hasAll = (qu.length === foodList.filter(function(x){return (x.storeName === stores[i]);}).length)
-                
+                var queriesAtStore = foodAtStore.map(function(x){return x.query});
+                var notAtStore = qu.filter(function(x){return queriesAtStore.indexOf(x) === -1;});
                 
                 stores_ids_prices.push({storeName: stores[i], storeID: stores[i+1],
                                     totalPrice: totalPrice.toFixed(2), hasAll: hasAll});
             }
-            
-            
-            
+                        
             var  totalPriceComp = function(a, b)
             {
                 return parseFloat(a.totalPrice) - parseFloat(b.totalPrice);
