@@ -141,9 +141,8 @@ body {
   border: 1px solid #eeeeee;
   border-radius: 6px 6px 6px 6px;
   list-style: none outside none;
-  padding: 8px 9px 9px 9px;
+  padding: 9px 9px 9px 9px;
   position: relative;
-  text-shadow: 1px 1px 0 white;
   width: 250px;
   height: 24px;
   clear: left;

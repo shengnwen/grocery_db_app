@@ -142,9 +142,19 @@ app.post('/findItems', function(req, res) {
                         totalPrice += rows[r].price;
                     }
                 }
-                stores_ids_prices.push({storeName: stores[i], storeID: stores[i+1], totalPrice: totalPrice.toFixed(2)});
+                
+                
+                hasAll = (qu.length === foodList.filter(function(x){return (x.storeName === stores[i]);}).length)
+                
+                
+                stores_ids_prices.push({storeName: stores[i], storeID: stores[i+1],
+                                    totalPrice: totalPrice.toFixed(2), hasAll: hasAll});
             }
-
+            
+            stores_ids_prices.sort(function(a, b)
+                                    {
+                                        return parseFloat(a.totalPrice) - parseFloat(b.totalPrice);
+                                    });
             console.log(stores_ids_prices);
 
             res.render( 'itemsSearch', {
