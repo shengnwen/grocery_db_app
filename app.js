@@ -28,6 +28,7 @@ app.get( '/itemChoices', function(req, res) {
     
     var x;
     
+    //clean the list, and sort it into a list of words to require and to exclude
     var cleanedItem = req.param("item").replace(/\'/g, "''").trim();
     console.log(cleanedItem);
     var words = cleanedItem.replace(/[\s]*NOT[\s]+\S+/g, "").split(" ");
@@ -40,6 +41,7 @@ app.get( '/itemChoices', function(req, res) {
     sqlAndPieces = [];
     sqlNotPieces = [];
 
+    //generate sql to require words
     for (i in words)
     {
         sqlAndPieces.push("SELECT name, food_type_name FROM product WHERE name LIKE '% " + words[i] + " %'" +
@@ -48,6 +50,7 @@ app.get( '/itemChoices', function(req, res) {
                                                        " OR name LIKE '" + words[i] + "'");
     }
     
+    //generate sql to exclude words
     if (notWords.length !== 0)
     {
         for (i in notWords)
@@ -63,6 +66,7 @@ app.get( '/itemChoices', function(req, res) {
     else
         sqlNot = ""
     
+    //combine all sql pieces together
     sql = "SELECT * FROM (" + sqlAndPieces.join(" INTERSECT ") + ")" + sqlNot + ";";
 
     console.log(sql);
