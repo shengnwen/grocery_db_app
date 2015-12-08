@@ -34,7 +34,13 @@ app.get( '/itemChoices', function(req, res) {
     
     sqlQuantity = "";
     terms = [["oz|ounces|ounce", "oz", 1],
-             ["fl.?\\s?oz.?|fluid\\s?ounces", "fl_oz",  1]]
+             ["lb|pounds|pound", "oz",  16],
+             ["fl.?\\s?oz.?|fluid\\s?ounces", "fl_oz",  1],
+             ["qt|quarts|quart", "fl_oz", 32],
+             ["gallons|gallon|gal", "fl_oz", 128],
+             ["ml|milliliters|milliliter", "fl_oz", .033814],
+             ["liters|liter|l", "fl_oz", 33.814],
+             ["box|count|ct|pack|pk|pc|bags|bag|pieces|piece|bars|sticks", "count", 1]];
     
     for (i in terms)
     {

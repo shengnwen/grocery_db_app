@@ -24,7 +24,7 @@ conn.text_factory = str;
 
 c = conn.cursor()
 
-addColumns(c);
+#addColumns(c);
 
 c.execute("SELECT * FROM product WHERE fl_oz IS NOT NULL");
 for i in range(20):
@@ -60,9 +60,9 @@ ml_items = [(x[0], ml_re.search(x[0]).group(1)) for x in names if ml_re.search(x
 l_items = [(x[0], l_re.search(x[0]).group(1)) for x in names if l_re.search(x[0])];
 
 fl_oz_from_qt_items = convert_units(qt_items, 32);
-fl_oz_from_gal_items = convert_units(qt_items, 128);
-fl_oz_from_ml_items = convert_units(qt_items, .033814);
-fl_oz_from_l_items = convert_units(qt_items, 33.814);
+fl_oz_from_gal_items = convert_units(gal_items, 128);
+fl_oz_from_ml_items = convert_units(ml_items, .033814);
+fl_oz_from_l_items = convert_units(l_items, 33.814);
 
 volume_items = list(set(fl_oz_items + fl_oz_from_qt_items
                         + fl_oz_from_gal_items + fl_oz_from_ml_items
