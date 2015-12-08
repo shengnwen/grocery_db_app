@@ -32,33 +32,19 @@ app.get( '/itemChoices', function(req, res) {
     var cleanedItem = req.param("item").replace(/\'/g, "''");
     console.log(cleanedItem);
     
-    var oz = -1;
-    var oz_min = -1;
-    var oz_max = -1;
-    
     sqlQuantity = "";
+    terms = [["oz|ounces|ounce", "oz", 1],
+             ["fl.?\\s?oz.?|fluid\\s?ounces", "fl_oz",  1]]
     
-    var oz_range_re = /(\d+\.?\d*|\d*\.\d+)(?:\s)+(?:oz|ounces|ounce)\s*-\s*(\d+\.?\d*|\d*\.\d+)(?:\s)+(?:oz|ounces|ounce)/i;
-    var oz_range_matches = oz_range_re.exec(cleanedItem);
-    if (oz_range_matches !== null)
+    for (i in terms)
     {
-        cleanedItem = cleanedItem.replace(oz_range_re, "");
-        
-        oz_min = oz_range_matches[1];
-        oz_max = oz_range_matches[2];
-        sqlQuantity += " WHERE " + oz_min + " <= oz AND oz <= " + oz_max;
+        var r = sqlQuantityRequest(cleanedItem, terms[i][0], terms[i][1], terms[i][2]);
+        sqlQuantity += r.quantity;
+        cleanedItem = r.cleanedQuery;
     }
-    else
-    {
-        var oz_re = /(\d+\.?\d*|\d*\.\d+)(?:\s)+(?:oz|ounces|ounce)/i;
-        oz_matches = oz_re.exec(cleanedItem);
-        if (oz_matches !== null)
-        {
-            cleanedItem = cleanedItem.replace(oz_re, "");
-            oz = oz_matches[1];
-            sqlQuantity += " WHERE oz = " + oz;
-        }
-    }
+    
+    if (sqlQuantity !== "")
+        sqlQuantity = " WHERE " + sqlQuantity;
     
     cleanedItem = cleanedItem.replace(/\s+/g, " ").trim();
     
@@ -74,7 +60,7 @@ app.get( '/itemChoices', function(req, res) {
     //generate sql to require words
     for (i in words)
     {
-        sqlAndPieces.push("SELECT name, food_type_name, oz FROM product WHERE name LIKE '% " + words[i] + " %'" +
+        sqlAndPieces.push("SELECT name, food_type_name, oz, fl_oz, count FROM product WHERE name LIKE '% " + words[i] + " %'" +
                                                        " OR name LIKE '" + words[i] +" %'" +
                                                        " OR name LIKE '% " + words[i] + "'" +
                                                        " OR name LIKE '" + words[i] + "'");
@@ -273,11 +259,39 @@ app.post('/findItems', function(req, res) {
     }
 });
 
-//takes a query, possibleTerms for a user to denote a quantity
-//as a single string seperated by "|", and amount to multiply found numbers by
-function sqlQuantityRequest(query, possibleTerms, mult)
+//takes a query, possibleTerms for a user to denote a quantity,
+//as a single string seperated by "|", attribute name, and amount to multiply found numbers by
+function sqlQuantityRequest(query, possibleTerms, attribute, mult)
 {
-    return ;
+    var sqlQuantity = "";
+    
+    var oz_range_re = new RegExp("(\\d+\\.?\\d*|\\d*\\.\\d+)(?:\\s)+(?:" + possibleTerms +
+            ")\\s*-\\s*(\\d+\\.?\\d*|\\d*\\.\\d+)(?:\\s)+(?:" + possibleTerms + ")", "i");
+    var oz_range_matches = oz_range_re.exec(query);
+    if (oz_range_matches !== null)
+    {
+        query = query.replace(oz_range_re, "");
+        
+        var oz_min = oz_range_matches[1];
+        var oz_max = oz_range_matches[2];
+        sqlQuantity += oz_min * mult + " <= " + attribute + " AND  " + attribute + " <= " + oz_max * mult;
+    }
+    else
+    {
+        var oz_re = new RegExp("(\\d+\\.?\\d*|\\d*\\.\\d+)(?:\\s)+(?:" + possibleTerms + ")", "i");
+        var oz_matches = oz_re.exec(query);
+        if (oz_matches !== null)
+        {
+            query = query.replace(oz_re, "");
+
+            var oz = oz_matches[1];
+            sqlQuantity += attribute + " = " + oz * mult;
+        }
+    }
+    
+    console.log("A = " + attribute + " H = " + query);
+    
+    return {quantity: sqlQuantity, cleanedQuery: query};
 }
 
 http.createServer( app ).listen( app.get( 'port' ), function(){
