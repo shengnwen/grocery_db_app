@@ -33,27 +33,77 @@ app.get( '/itemChoices', function(req, res) {
     
     var x;
     
-    cleanedItem = req.param("item").replace(/\'/g, "''");
+    //clean the list, and sort it into a list of words to require and to exclude
+    var cleanedItem = req.param("item").replace(/\'/g, "''").trim();
+    console.log(cleanedItem);
+    var words = cleanedItem.replace(/[\s]*NOT[\s]+\S+/g, "").split(" ");
+    console.log(words);
+    var notWords = cleanedItem.split(" ").filter(function(x){return words.indexOf(x) === -1 && x !== "NOT";});
+    console.log(notWords);
     
-    db.all("SELECT name, food_type_name FROM product WHERE name LIKE '% " + cleanedItem + " %'" +
-                                                       "OR name LIKE '" + cleanedItem +" %'" +
-                                                       "OR name LIKE '% " + cleanedItem + "'" +
-                                                       "OR name LIKE '" + cleanedItem + "';",
+    selected = req.param("selected");
+    
+    sqlAndPieces = [];
+    sqlNotPieces = [];
+
+    //generate sql to require words
+    for (i in words)
+    {
+        sqlAndPieces.push("SELECT name, food_type_name FROM product WHERE name LIKE '% " + words[i] + " %'" +
+                                                       " OR name LIKE '" + words[i] +" %'" +
+                                                       " OR name LIKE '% " + words[i] + "'" +
+                                                       " OR name LIKE '" + words[i] + "'");
+    }
+    
+    //generate sql to exclude words
+    if (notWords.length !== 0)
+    {
+        for (i in notWords)
+        {
+            sqlNotPieces.push("SELECT name, food_type_name FROM product WHERE name LIKE '% " + notWords[i] + " %'" +
+                                                           " OR name LIKE '" + notWords[i] +" %'" +
+                                                           " OR name LIKE '% " + notWords[i] + "'" +
+                                                           " OR name LIKE '" + notWords[i] + "'")
+        }
+        
+        sqlNot = " EXCEPT SELECT * FROM (" + sqlNotPieces.join(" UNION ") + ")";
+    }
+    else
+        sqlNot = ""
+    
+    //combine all sql pieces together
+    sql = "SELECT * FROM (" + sqlAndPieces.join(" INTERSECT ") + ")" + sqlNot + ";";
+
+    console.log(sql);
+    db.all(sql,
         function(err, rows) {
             sideHTML = "Filtering:<br>";
-            
+            console.log(err);
             foodNames = [];
             foodTypes = [];
             for (var i = 0; i < rows.length; i++)
             {
-                if (foodTypes.indexOf(rows[i].food_type_name) == -1)
+                if (foodTypes.indexOf(rows[i].food_type_name) === -1)
                 {
                     foodTypes.push(rows[i].food_type_name);
                 }
                 foodNames.push({name: rows[i].name, type: rows[i].food_type_name});
             }
             
+            if (foodTypes.length !== 0)
+            {
+                if (foodTypes.indexOf(selected) === -1)
+                {
+                    selected = "All";
+                }
+            }
+            else
+            {
+                foodTypes.push(selected);
+            }
+            
             res.render( 'sideBar', {
+                selected: selected,
 		        foodType: foodTypes,
 		        foodName: foodNames,
 		        cache: false
@@ -73,81 +123,127 @@ app.post('/findItems', function(req, res) {
     
     db = new sqlite3.Database('groceries.sqlite');
     
-    sql = [];
+    var sql = [];
+    var sqlNameMatch = "";
     for (q in qu)
     {
+        sqlNameMatch = "";
+    
         if (typeof req.body[qu[q]] === "string")
-            sqlNameMatch = "stocks.name = '" + req.body[qu[q]] + "'"
+            sqlNameMatch = "productName = '" + req.body[qu[q]] + "'"
         else
         {
-            sqlNameMatch = "(";
-            //sqlNameMatch = "name = '" + req.body[qu[q]].map(function(x){return x.replace(/\'/g, "''")}).join("' OR name = '") + "'";
-            count = 0;
-            names = req.body[qu[q]].map(function(x){return x.replace(/\'/g, "''")})
-            for (i in names)
+            if (req.body[qu[q]])
             {
-                sqlNameMatch += "stocks.name = '" + names[i] + "'";
-                if (i != names.length - 1)
+                sqlNameMatch = "(";
+
+                count = 0;
+                names = req.body[qu[q]].map(function(x){return x.replace(/\'/g, "''")})
+                for (i in names)
                 {
-                    count += 1;
-                    if (count === 10)
+                    sqlNameMatch += "stocks.name = '" + names[i] + "'";
+                    if (i != names.length - 1)
                     {
-                        sqlNameMatch += ") OR ("
-                        count = 0;
+                        count += 1;
+                        if (count === 10)
+                        {
+                            sqlNameMatch += ") OR ("
+                            count = 0;
+                        }
+                        else
+                            sqlNameMatch += " OR ";
                     }
-                    else
-                        sqlNameMatch += " OR ";
                 }
+                sqlNameMatch += ")"
             }
-            sqlNameMatch += ")"
         }
 
-        var numStores = 2; // How to get this number?
-        for (var i = 0; i < numStores; i++) {
-            sql.push("SELECT * FROM (SELECT store.name AS storeName, store.store_ID, stocks.name AS productName, price FROM stocks INNER JOIN store ON stocks.store_ID=store.store_ID WHERE (" + sqlNameMatch + ") AND price = (SELECT MIN(price) FROM stocks WHERE stocks.store_id = " + i + " AND (" + sqlNameMatch + ")) LIMIT 1)");
+        if (sqlNameMatch !== "")
+        {
+            var numStores = 2; // How to get this number?
+            for (var i = 0; i < numStores; i++) {
+                sql.push("SELECT * FROM \
+                            (SELECT '" + qu[q] + "' AS query, store.name AS storeName, store.store_ID, stocks.name AS productName, price \
+                            FROM stocks INNER JOIN store ON stocks.store_ID = store.store_ID \
+                            WHERE (" + sqlNameMatch + ") AND stocks.store_ID = " + i + " \
+                            ORDER BY price ASC \
+                            LIMIT 1)");
+            }
         }
-
-        // sql.push("SELECT * FROM (SELECT name, price FROM stocks WHERE (" + sqlNameMatch + ") AND price = (SELECT MIN(price) FROM stocks WHERE " + sqlNameMatch + ") LIMIT 1)");
-
     }
+    
+    if (sql.length !== 0)
+    {
+        console.log(sql.join(" UNION ") + ";");
 
-    db.all(sql.join(" UNION ") + ";", function(err, rows) {
-            console.log(err);
-            //console.log(rows);
-            
-            foodList = [];
-            stores = [];
-            stores_ids_prices = [];
+        db.all(sql.join(" UNION ") + ";", function(err, rows) {
+                console.log(err);
+                console.log(rows);
 
-            for (i in rows)
-            {
-                foodList.push({storeName: rows[i].storeName, productName: rows[i].productName, price: rows[i].price.toFixed(2)});
+                foodList = [];
+                stores = [];
+                stores_ids_prices = [];
+                
+                for (var i in rows)
+                {
+                    foodList.push({query: rows[i].query, storeName: rows[i].storeName, productName: rows[i].productName, price: rows[i].price.toFixed(2)});
 
-                if (stores.indexOf(rows[i].storeName) < 0) {
-                    stores.push(rows[i].storeName, rows[i].store_ID);
-                }
-            }
-
-            for (var i = 0; i < stores.length; i += 2) {
-                var totalPrice = 0;
-                for (r in rows) {
-                    if (rows[r].storeName == stores[i]) {
-                        totalPrice += rows[r].price;
+                    if (stores.indexOf(rows[i].storeName) < 0) {
+                        stores.push(rows[i].storeName, rows[i].store_ID);
                     }
                 }
-                stores_ids_prices.push({storeName: stores[i], storeID: stores[i+1], totalPrice: totalPrice.toFixed(2)});
-            }
+            
+                var notAtStore = [];
+            
+                for (var i = 0; i < stores.length; i += 2) {
+                    var totalPrice = 0;
+                    for (r in rows) {
+                        if (rows[r].storeName == stores[i]) {
+                            totalPrice += rows[r].price;
+                        }
+                    }
+                
+                    var foodAtStore = foodList.filter(function(x){return (x.storeName === stores[i]);});
+                    hasAll = (qu.length === foodAtStore.length)
+                
+                    var queriesAtStore = foodAtStore.map(function(x){return x.query});
+                    notAtStore = notAtStore.concat(qu.filter(
+                            function(x){return queriesAtStore.indexOf(x) === -1;}).map(
+                                function(x){return {storeID: stores[i + 1], query: x};}));
+                
+                    stores_ids_prices.push({storeName: stores[i], storeID: stores[i+1],
+                                        totalPrice: totalPrice.toFixed(2), hasAll: hasAll});
+                }       
+             
+                var  totalPriceComp = function(a, b)
+                {
+                    return parseFloat(a.totalPrice) - parseFloat(b.totalPrice);
+                }
+            
+                stores_ids_prices = stores_ids_prices.filter(function(x){return x.hasAll;}).sort(totalPriceComp).concat(
+                    stores_ids_prices.filter(function(x){return !x.hasAll;}).sort(totalPriceComp));
 
-            console.log(stores_ids_prices);
-
-            res.render( 'itemsSearch', {
-		        groceries: foodList,
-                storeList: stores_ids_prices,
-		        cache: false
-	        });
-        });
+                res.render( 'itemsSearch', {
+                    initiallySelected: stores_ids_prices[0].storeID,
+                    groceries: foodList,
+                    missingGroceries: notAtStore,
+                    storeList: stores_ids_prices,
+                    cache: false
+                });
+            });
     
-    db.close();
+        db.close();
+    }
+    else
+    {
+        res.render( 'itemsSearch', {
+                    initiallySelected: 0,
+                    groceries: [],
+                    missingGroceries: [],
+                    storeList: [],
+                    cache: false
+                });
+    }
 });
 
 http.createServer( app ).listen( app.get( 'port' ), function(){

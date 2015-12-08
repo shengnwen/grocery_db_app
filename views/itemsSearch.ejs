@@ -8,11 +8,20 @@
     <div id="layout">
       <h1 id="page-title">Grocery List</h1>
 
+      <% if (storeList.length == 0) { %>
+         <div class="item" style="margin-left: auto;margin-right: auto;background-color:#ff8080;".>
+            <label>  No results found for your queries. </label>
+         </div>
+      <% }; %>
+      
+      
       <div id="storeList-L">
         <form>
           <% storeList.forEach( function ( store ) { %>
-            <div class="item">
-              <input type="radio" name="store" onclick="storeSelect(<%= store.storeID %>);" value="<%= store.storeName %>" <% if(store.storeID == 0){ %> checked="checked" <% } %> ><%= store.storeName %><br>
+            <div class="item" <% if(store.hasAll == false){ %>style="background-color:#ff8080;"<%}%>>
+              <input type="radio" name="store" onclick="storeSelect(<%= store.storeID %>);" value="<%= store.storeName %>"
+              <% if(store.storeID == initiallySelected){ %> checked="checked" <% } %> > <span style="padding-left:8px;"><%= store.storeName %> </span>
+              <span style="position:absolute;right:10px">Total: $<%= store.totalPrice %></span><br>
             </div>
           <% }); %>
         </form>
@@ -21,6 +30,13 @@
       <div id="storeList-R">
         <% storeList.forEach( function ( store ){ %>
           <div id="<%= store.storeID %>" style="display: inline">
+            <% missingGroceries.forEach( function ( missing ){ %>
+                <% if (missing.storeID == store.storeID) { %>
+                    <div class="item" style="background-color:#ff8080;".>
+                    <label> Could not find an item for '<%= missing.query %>'. </label>
+                    </div>
+                <% } %>
+            <% }); %>
             <% groceries.forEach( function ( product ){ %>
               <% if (product.storeName == store.storeName) { %>
                 <div class="item">
@@ -35,18 +51,23 @@
       <div id="priceList-R">
         <% storeList.forEach( function ( store ){ %>
           <div id="<%= store.storeID %>Price" style="display: none">
+            <% missingGroceries.forEach( function ( missing ){ %>
+                <% if (missing.storeID == store.storeID) { %>
+                    <div class="item" style="visibility:hidden;">
+                    </div>
+                <% } %>
+            <% }); %>
             <% groceries.forEach( function ( product ){ %>
               <% if (product.storeName == store.storeName) { %>
                 <div class="item">
-                  <label> <%= product.price %> </label>
+                  <label> $<%= product.price %> </label>
                 </div>
               <% } %>
             <% }); %>
-           <div class="item"><label> <%= store.totalPrice %> </label></div>
+           <div class="item"><label> Total: $<%= store.totalPrice %> </label></div>
           </div>
         <% }); %>
       </div>
-    </div>
 
     <script>
       function storeSelect(value) {
@@ -70,7 +91,7 @@
 
       }
 
-      storeSelect("0");
+      storeSelect("<%= initiallySelected %>");
 
     </script>
   </body>

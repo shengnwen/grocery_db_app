@@ -19,9 +19,13 @@
                                                                   addToFoodList(value);
                                                                   value = '';
                                                               }"/>
+        <button id="helpButton" class="help" type="button"
+                onclick='alert("Type search terms in the box to the left.  Type NOT [term] to exclude the term from your search.'
+                title="Get instructions">?</button>
         <button id="addButton" class="add" type="button" onclick="addToFoodList(itemEntry.value);
                                                       itemEntry.value = '';"
                 title="Add an item to the list.">Add</button>
+                
       </div>
       <div id = "itemsList">
       </div>
@@ -79,7 +83,7 @@
                 itemsListDiv.insertBefore(div);
             }
         }
-        
+        console.log(foodList);
         autoFindButtonDisabled();
     }
     
@@ -88,33 +92,50 @@
     {
         if (food !== "")
         {
-            foodList[i].name = food;
+            foodListLoc = foodListWithID(i);
+            console.log(i);
+            console.log(foodListLoc);
+            foodList[foodListLoc].name = food;
             
-            itemChoices = document.getElementById("itemChoices" + i);
-            itemChoices.src = "/itemChoices?item=" + food;
+            //to prevent the reloading of the iframe page from resetting the filtering
+            console.log("HERE");
+            var itemChoices = document.getElementById("itemChoices" + i);
+            console.log("HERE 2");
+            var dropdown = itemChoices.contentWindow.document.getElementById('food_type_selector');
+
+            itemChoices.src = "/itemChoices?item=" + food + "&selected=" + dropdown.options[dropdown.selectedIndex].text;
         }
     }
     
     //removes an item from the food list
     function deleteButtonClick(i)
     {
+        console.log(i);
         //find where in foodList the item being deleted is
-        foodListLoc = -1;
-        for	(j = 0; j < foodList.length; j++)
-        {
-            if (foodList[j].id === i)
-            {
-                foodListLoc = j;
-                break;
-            }
-        }
+        foodListLoc = foodListWithID(i);
+        
         foodList.splice(foodListLoc, 1);
 
-        item = document.getElementById("item" + i);
-        itemListDiv = document.getElementById("itemsList");
+        var item = document.getElementById("item" + i);
+        var itemListDiv = document.getElementById("itemsList");
         itemListDiv.removeChild(item);
-        
+                
         autoFindButtonDisabled();
+    }
+    
+    
+    //returns the position in the foodList of the element with id of argument id
+    //returns -1 if there is no such element
+    function foodListWithID(id)
+    {
+        console.log(foodList);
+        for (j in foodList)
+        {
+            if (foodList[j].id === id)
+                return j;
+        }
+        
+        return -1;
     }
     
     //calls for a new url

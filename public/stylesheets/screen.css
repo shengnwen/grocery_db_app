@@ -134,6 +134,11 @@ body {
     float: right;
 }
 
+.help {
+    position: relative;
+    float: right;
+}
+
 .item, .item-new, .item-choice {
   overflow: hidden;
   *zoom: 1;
@@ -141,9 +146,8 @@ body {
   border: 1px solid #eeeeee;
   border-radius: 6px 6px 6px 6px;
   list-style: none outside none;
-  padding: 8px 9px 9px 9px;
+  padding: 9px 9px 9px 9px;
   position: relative;
-  text-shadow: 1px 1px 0 white;
   width: 250px;
   height: 24px;
   clear: left;
@@ -156,7 +160,7 @@ body {
 
 .item-new {
   padding: 4px 5px;
-  width: 308px;
+  width: 338px;
   height: 27px;
 }
 
