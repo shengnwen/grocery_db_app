@@ -22,11 +22,6 @@ app.use( express.static( path.join( __dirname, 'public' )) );
 
 app.get( '/', function(req, res) { res.render( 'layout')});
 
-app.get( '/index', function(req, res) { res.render( 'index')});
-
-app.get( '/sign-up', function(req, res) { res.render( 'sign-up')});
-
-
 // send back form
 app.get( '/itemChoices', function(req, res) {
     db = new sqlite3.Database('groceries.sqlite');
@@ -34,7 +29,7 @@ app.get( '/itemChoices', function(req, res) {
     var x;
     
     //clean the list, and sort it into a list of words to require and to exclude
-    var cleanedItem = req.param("item").replace(/\'/g, "''").trim();
+    var cleanedItem = req.param("item").replace(/\'/g, "''");
     console.log(cleanedItem);
     
     var oz = -1;
@@ -45,6 +40,8 @@ app.get( '/itemChoices', function(req, res) {
     var oz_range_matches = oz_range_re.exec(cleanedItem);
     if (oz_range_matches !== null)
     {
+        cleanedItem = cleanedItem.replace(oz_range_re, "");
+        
         oz_min = oz_range_matches[1];
         oz_max = oz_range_matches[2];
     }
@@ -58,10 +55,12 @@ app.get( '/itemChoices', function(req, res) {
             oz = oz_matches[1];
         }
     }
+    cleanedItem = cleanedItem.replace(/\s+/g, " ").trim();
     
     var words = cleanedItem.replace(/[\s]*NOT[\s]+\S+/g, "").split(" ");
+    console.log("words = " + words)
     var notWords = cleanedItem.split(" ").filter(function(x){return words.indexOf(x) === -1 && x !== "NOT";});
-    
+    console.log("notWords = " + notWords);
     selected = req.param("selected");
     
     sqlAndPieces = [];
@@ -105,12 +104,11 @@ app.get( '/itemChoices', function(req, res) {
     
     
     //combine all sql pieces together
-    sql = "SELECT name, food_type_name, oz FROM (" + sqlAndPieces.join(" INTERSECT ") + ")" + sqlQuantity + sqlNot + ";";
+    sql = "SELECT name, food_type_name FROM (" + sqlAndPieces.join(" INTERSECT ") + ")" + sqlQuantity + sqlNot + ";";
 
     console.log(sql);
     db.all(sql,
         function(err, rows) {
-            console.log(rows);
             sideHTML = "Filtering:<br>";
             console.log(err);
             foodNames = [];
