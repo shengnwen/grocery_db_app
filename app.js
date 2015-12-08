@@ -22,6 +22,11 @@ app.use( express.static( path.join( __dirname, 'public' )) );
 
 app.get( '/', function(req, res) { res.render( 'layout')});
 
+app.get( '/index', function(req, res) { res.render( 'index')});
+
+app.get( '/sign-up', function(req, res) { res.render( 'sign-up')});
+
+
 // send back form
 app.get( '/itemChoices', function(req, res) {
     db = new sqlite3.Database('groceries.sqlite');
