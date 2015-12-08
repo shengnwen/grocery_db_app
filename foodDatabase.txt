@@ -1,6 +1,6 @@
 create table user_(
-     user_ID       int,
-     zipcode       int,
+     user_ID       int AUTOINCREMENT,
+     username      varchar(256),
      password      varchar(256),
      email         varchar(254),
      primary key (user_ID)
@@ -8,33 +8,45 @@ create table user_(
 
 create table store(
      store_ID      int,
-     name          varchar(80),
+     store_name          varchar(80),
      address       varchar(80),
-     gps_x         numeric(7, 4),
-     gps_y         numeric(7, 4),
      website       varchar(2048),
      primary key (store_ID)
 );
 
 create table food_type(
      food_type_name varchar(100),
+     logo           BLOB(200K),
      primary key (food_type_name)
 );
 
 create table product(
-     name           varchar(100),
-     brand          varchar(100),
+     product_ID     int,
+     product_name           varchar(100),
+     calories       int,
      food_type_name varchar(100),
-     primary key (name),
+     primary key (product_ID),
      foreign key (food_type_name) references food_type
 );
 
 create table stocks(
      store_ID      int,
-     name          varchar(100),
+     product_ID    int,
      price         numeric(10, 2),
      url           varchar(2048),
+     timestamp	   date,
      primary key (store_ID, name),
      foreign key (store_ID) references store,
-     foreign key (name) references product
+     foreign key (product_ID) references product
+);
+
+create table user_history(
+     user_ID        int,
+     shopping_list_ID int,
+     query          varchar(256),
+     food_type_name varchar(100),
+     product_name   varchar(100),
+     foreign key (user_ID) references user_,
+     foreign key (food_type_name) references food_type,
+     foreign key (product_name) references product
 );

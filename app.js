@@ -36,6 +36,8 @@ app.get( '/itemChoices', function(req, res) {
     var oz_min = -1;
     var oz_max = -1;
     
+    sqlQuantity = "";
+    
     var oz_range_re = /(\d+\.?\d*|\d*\.\d+)(?:\s)+(?:oz|ounces|ounce)\s*-\s*(\d+\.?\d*|\d*\.\d+)(?:\s)+(?:oz|ounces|ounce)/i;
     var oz_range_matches = oz_range_re.exec(cleanedItem);
     if (oz_range_matches !== null)
@@ -44,6 +46,7 @@ app.get( '/itemChoices', function(req, res) {
         
         oz_min = oz_range_matches[1];
         oz_max = oz_range_matches[2];
+        sqlQuantity += " WHERE " + oz_min + " <= oz AND oz <= " + oz_max;
     }
     else
     {
@@ -53,8 +56,10 @@ app.get( '/itemChoices', function(req, res) {
         {
             cleanedItem = cleanedItem.replace(oz_re, "");
             oz = oz_matches[1];
+            sqlQuantity += " WHERE oz = " + oz;
         }
     }
+    
     cleanedItem = cleanedItem.replace(/\s+/g, " ").trim();
     
     var words = cleanedItem.replace(/[\s]*NOT[\s]+\S+/g, "").split(" ");
@@ -91,16 +96,6 @@ app.get( '/itemChoices', function(req, res) {
     else
         sqlNot = ""
     
-
-    sqlQuantity = "";
-    if (oz != -1)
-    {
-        sqlQuantity += " WHERE oz = " + oz;
-    }
-    else if (oz_min != -1 && oz_max != -1)
-    {
-        sqlQuantity += " WHERE " + oz_min + " <= oz AND oz <= " + oz_max;
-    }
     
     
     //combine all sql pieces together
@@ -277,6 +272,13 @@ app.post('/findItems', function(req, res) {
                 });
     }
 });
+
+//takes a query, possibleTerms for a user to denote a quantity
+//as a single string seperated by "|", and amount to multiply found numbers by
+function sqlQuantityRequest(query, possibleTerms, mult)
+{
+    return ;
+}
 
 http.createServer( app ).listen( app.get( 'port' ), function(){
   console.log( 'Express server listening on port ' + app.get( 'port' ));
