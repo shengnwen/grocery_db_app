@@ -31,10 +31,31 @@ app.get( '/itemChoices', function(req, res) {
     //clean the list, and sort it into a list of words to require and to exclude
     var cleanedItem = req.param("item").replace(/\'/g, "''").trim();
     console.log(cleanedItem);
+    
+    var oz = -1;
+    var oz_min = -1;
+    var oz_max = -1;
+    
+    var oz_range_re = /(\d+\.?\d*|\d*\.\d+)(?:\s)+(?:oz|ounces|ounce)\s*-\s*(\d+\.?\d*|\d*\.\d+)(?:\s)+(?:oz|ounces|ounce)/i;
+    var oz_range_matches = oz_range_re.exec(cleanedItem);
+    if (oz_range_matches !== null)
+    {
+        oz_min = oz_range_matches[1];
+        oz_max = oz_range_matches[2];
+    }
+    else
+    {
+        var oz_re = /(\d+\.?\d*|\d*\.\d+)(?:\s)+(?:oz|ounces|ounce)/i;
+        oz_matches = oz_re.exec(cleanedItem);
+        if (oz_matches !== null)
+        {
+            cleanedItem = cleanedItem.replace(oz_re, "");
+            oz = oz_matches[1];
+        }
+    }
+    
     var words = cleanedItem.replace(/[\s]*NOT[\s]+\S+/g, "").split(" ");
-    console.log(words);
     var notWords = cleanedItem.split(" ").filter(function(x){return words.indexOf(x) === -1 && x !== "NOT";});
-    console.log(notWords);
     
     selected = req.param("selected");
     
@@ -44,7 +65,7 @@ app.get( '/itemChoices', function(req, res) {
     //generate sql to require words
     for (i in words)
     {
-        sqlAndPieces.push("SELECT name, food_type_name FROM product WHERE name LIKE '% " + words[i] + " %'" +
+        sqlAndPieces.push("SELECT name, food_type_name, oz FROM product WHERE name LIKE '% " + words[i] + " %'" +
                                                        " OR name LIKE '" + words[i] +" %'" +
                                                        " OR name LIKE '% " + words[i] + "'" +
                                                        " OR name LIKE '" + words[i] + "'");
@@ -66,12 +87,25 @@ app.get( '/itemChoices', function(req, res) {
     else
         sqlNot = ""
     
+
+    sqlQuantity = "";
+    if (oz != -1)
+    {
+        sqlQuantity += " WHERE oz = " + oz;
+    }
+    else if (oz_min != -1 && oz_max != -1)
+    {
+        sqlQuantity += " WHERE " + oz_min + " <= oz AND oz <= " + oz_max;
+    }
+    
+    
     //combine all sql pieces together
-    sql = "SELECT * FROM (" + sqlAndPieces.join(" INTERSECT ") + ")" + sqlNot + ";";
+    sql = "SELECT name, food_type_name, oz FROM (" + sqlAndPieces.join(" INTERSECT ") + ")" + sqlQuantity + sqlNot + ";";
 
     console.log(sql);
     db.all(sql,
         function(err, rows) {
+            console.log(rows);
             sideHTML = "Filtering:<br>";
             console.log(err);
             foodNames = [];

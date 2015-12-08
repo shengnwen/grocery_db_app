@@ -98,12 +98,10 @@
             foodList[foodListLoc].name = food;
             
             //to prevent the reloading of the iframe page from resetting the filtering
-            console.log("HERE");
             var itemChoices = document.getElementById("itemChoices" + i);
-            console.log("HERE 2");
             var dropdown = itemChoices.contentWindow.document.getElementById('food_type_selector');
 
-            itemChoices.src = "/itemChoices?item=" + food + "&selected=" + dropdown.options[dropdown.selectedIndex].text;
+            itemChoices.src = getItemFrameSRC(food, dropdown.options[dropdown.selectedIndex].text);
         }
     }
     
@@ -138,12 +136,6 @@
         return -1;
     }
     
-    //calls for a new url
-    function findItems()
-    {
-        location.href = "/findItems?item=" + foodList.map(function(x){return x.name}).join("&item=");
-    }
-    
     //returns a unique int
     function getNewUniqueId()
     {
@@ -167,13 +159,18 @@
     function htmlForItem(item, i)
     {
         return '<iframe class="item-choice" id="itemChoices' + i +
-        '" src ="/itemChoices?item=' + item + '" scrolling="yes" style="display: none">' +
+        '" src ="' + getItemFrameSRC(item, "All") + '" scrolling="yes" style="display: none">' +
          '</iframe>' +
         '<div class="item" onclick="openItemChoices(' + i + ')">' +
         '<input class="update-input" type="text" name="content" onKeyDown="updateFoodList(value,' + i + ')"' +
         'onInput="updateFoodList(value,' + i + ')" value="' + item + '" />' +
         '<button id=button"' + i +'" class="del-btn" type="button" onclick="deleteButtonClick('+ i + ')"  title="Delete this grocery item">Delete</button>' +
         '</div>'
+    }
+
+    function getItemFrameSRC(name, selected)
+    {
+        return "/itemChoices?item=" + name + "&selected=" + selected;
     }
 
    $(document).ready(function() {
