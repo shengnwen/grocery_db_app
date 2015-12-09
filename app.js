@@ -40,7 +40,7 @@ app.get( '/itemChoices', function(req, res) {
              ["gallons|gallon|gal", "fl_oz", 128],
              ["ml|milliliters|milliliter", "fl_oz", .033814],
              ["liters|liter|l", "fl_oz", 33.814],
-             ["box|count|ct|pack|pk|pc|bags|bag|pieces|piece|bars|sticks", "count", 1]];
+             ["boxes|box|count|ct|packs|pack|pk|pc|bags|bag|pieces|piece|bars|sticks", "count", 1]];
     
     for (i in terms)
     {
