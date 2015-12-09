@@ -78,13 +78,13 @@ app.get( '/itemChoices', function(req, res) {
     {
         for (i in notWords)
         {
-            sqlNotPieces.push("SELECT name, food_type_name FROM product WHERE name LIKE '% " + notWords[i] + " %'" +
-                                                           " OR name LIKE '" + notWords[i] +" %'" +
-                                                           " OR name LIKE '% " + notWords[i] + "'" +
-                                                           " OR name LIKE '" + notWords[i] + "'")
+            sqlNotPieces.push("(name LIKE '% " + notWords[i] + " %'" +
+                              " OR name LIKE '" + notWords[i] +" %'" +
+                              " OR name LIKE '% " + notWords[i] + "'" +
+                              " OR name LIKE '" + notWords[i] + "')")
         }
         
-        sqlNot = " EXCEPT SELECT * FROM (" + sqlNotPieces.join(" UNION ") + ")";
+        sqlNot = " EXCEPT SELECT * FROM (SELECT name, food_type_name FROM product WHERE" + sqlNotPieces.join(" OR ") + ")";
     }
     else
         sqlNot = ""
