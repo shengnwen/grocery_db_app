@@ -62,14 +62,15 @@ app.get( '/itemChoices', function(req, res) {
     
     sqlAndPieces = [];
     sqlNotPieces = [];
-
+    
+    sqlAndPieces.push();
     //generate sql to require words
     for (i in words)
     {
-        sqlAndPieces.push("SELECT name, food_type_name, oz, fl_oz, count FROM product WHERE name LIKE '% " + words[i] + " %'" +
-                                                       " OR name LIKE '" + words[i] +" %'" +
-                                                       " OR name LIKE '% " + words[i] + "'" +
-                                                       " OR name LIKE '" + words[i] + "'");
+        sqlAndPieces.push(" (name LIKE '% " + words[i] + " %'" +
+                          " OR name LIKE '" + words[i] +" %'" +
+                          " OR name LIKE '% " + words[i] + "'" +
+                          " OR name LIKE '" + words[i] + "')");
     }
     
     //generate sql to exclude words
@@ -91,7 +92,7 @@ app.get( '/itemChoices', function(req, res) {
     
     
     //combine all sql pieces together
-    sql = "SELECT name, food_type_name FROM (" + sqlAndPieces.join(" INTERSECT ") + ")" + sqlQuantity + sqlNot + ";";
+    sql = "SELECT name, food_type_name FROM (SELECT name, food_type_name, oz, fl_oz, count FROM product WHERE" + sqlAndPieces.join(" AND ") + ")" + sqlQuantity + sqlNot + ";";
 
     console.log(sql);
     db.all(sql,
