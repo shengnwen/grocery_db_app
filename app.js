@@ -21,7 +21,7 @@ app.use( express.logger( 'dev' ) );
 app.use( express.urlencoded() );
 app.use( express.static( path.join( __dirname, 'public' )) );
 
-//app.post("/addNewUser", userRouter);
+app.post("/addNewUser", userRouter.addNewUser);
 app.get( '/', function(req, res) { res.render( 'layout')});
 app.get( '/index', function(req, res) { res.render( 'index')});
 app.get( '/sign-up', function(req, res) { res.render( 'sign-up')});
