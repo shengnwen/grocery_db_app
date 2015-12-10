@@ -40,7 +40,7 @@ app.get( '/itemChoices', function(req, res) {
     var cleanedItem = req.param("item").replace(/\'/g, "''");
     console.log(cleanedItem);
     
-    sqlQuantity = "";
+    sqlQuantity = [];
     terms = [["oz|ounces|ounce", "oz", 1],
              ["lb|pounds|pound", "oz",  16],
              ["fl.?\\s?oz.?|fluid\\s?ounces", "fl_oz",  1],
@@ -53,12 +53,15 @@ app.get( '/itemChoices', function(req, res) {
     for (i in terms)
     {
         var r = sqlQuantityRequest(cleanedItem, terms[i][0], terms[i][1], terms[i][2]);
-        sqlQuantity += r.quantity;
+        if (r.quantity !== "")
+        {
+            sqlQuantity.push(r.quantity);
+        }
         cleanedItem = r.cleanedQuery;
     }
     
-    if (sqlQuantity !== "")
-        sqlQuantity = " WHERE " + sqlQuantity;
+    if (sqlQuantity.length !== 0)
+        sqlQuantity = " WHERE " + sqlQuantity.join(" OR ");
     
     cleanedItem = cleanedItem.replace(/\s+/g, " ").trim();
     
@@ -315,7 +318,7 @@ function sqlQuantityRequest(query, possibleTerms, attribute, mult)
         
         var oz_min = oz_range_matches[1];
         var oz_max = oz_range_matches[2];
-        sqlQuantity += oz_min * mult + " <= " + attribute + " AND  " + attribute + " <= " + oz_max * mult;
+        sqlQuantity += "(" + oz_min * mult + " <= " + attribute + " AND  " + attribute + " <= " + oz_max * mult + ")";
     }
     else
     {
