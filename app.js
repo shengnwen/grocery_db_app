@@ -10,6 +10,7 @@ var http           = require( 'http' );
 var path           = require( 'path' );
 var engine         = require( 'ejs-locals' );
 var sqlite3        = require('sqlite3').verbose();
+var userRouter     = require("./routes/userRouter");
 var app    = express();
 
 app.set( 'port', process.env.PORT || 3001 );
@@ -19,6 +20,7 @@ app.set( 'view engine', 'ejs' );
 app.use( express.logger( 'dev' ) );
 app.use( express.urlencoded() );
 app.use( express.static( path.join( __dirname, 'public' )) );
+app.use("/addNewUser", userRouter);
 
 app.get( '/', function(req, res) { res.render( 'layout')});
 app.get( '/index', function(req, res) { res.render( 'index')});
@@ -70,10 +72,10 @@ app.get( '/itemChoices', function(req, res) {
     //generate sql to require words
     for (i in words)
     {
-        sqlAndPieces.push(" (name LIKE '% " + words[i] + " %'" +
-                          " OR name LIKE '" + words[i] +" %'" +
-                          " OR name LIKE '% " + words[i] + "'" +
-                          " OR name LIKE '" + words[i] + "')");
+        sqlAndPieces.push(" (product_name LIKE '% " + words[i] + " %'" +
+                          " OR product_name LIKE '" + words[i] +" %'" +
+                          " OR product_name LIKE '% " + words[i] + "'" +
+                          " OR product_name LIKE '" + words[i] + "')");
     }
     
     //generate sql to exclude words
@@ -81,13 +83,13 @@ app.get( '/itemChoices', function(req, res) {
     {
         for (i in notWords)
         {
-            sqlNotPieces.push("(name LIKE '% " + notWords[i] + " %'" +
-                              " OR name LIKE '" + notWords[i] +" %'" +
-                              " OR name LIKE '% " + notWords[i] + "'" +
-                              " OR name LIKE '" + notWords[i] + "')")
+            sqlNotPieces.push("(product_name LIKE '% " + notWords[i] + " %'" +
+                              " OR product_name LIKE '" + notWords[i] +" %'" +
+                              " OR product_name LIKE '% " + notWords[i] + "'" +
+                              " OR product_name LIKE '" + notWords[i] + "')")
         }
         
-        sqlNot = " EXCEPT SELECT * FROM (SELECT name, food_type_name FROM product WHERE" + sqlNotPieces.join(" OR ") + ")";
+        sqlNot = " EXCEPT SELECT * FROM (SELECT product_name, food_type_name FROM product WHERE" + sqlNotPieces.join(" OR ") + ")";
     }
     else
         sqlNot = ""
@@ -95,7 +97,7 @@ app.get( '/itemChoices', function(req, res) {
     
     
     //combine all sql pieces together
-    sql = "SELECT name, food_type_name FROM (SELECT name, food_type_name, oz, fl_oz, count FROM product WHERE" + sqlAndPieces.join(" AND ") + ")" + sqlQuantity + sqlNot + ";";
+    sql = "SELECT product_name, food_type_name FROM (SELECT product_name, food_type_name, oz, fl_oz, count FROM product WHERE" + sqlAndPieces.join(" AND ") + ")" + sqlQuantity + sqlNot + ";";
 
     console.log(sql);
     db.all(sql,
@@ -147,10 +149,20 @@ app.post('/findItems', function(req, res) {
     
     db = new sqlite3.Database('groceries.sqlite');
     
+    var optimize, valuePrepend, valueAppend;
+    
     if (req.body.optimize === "calories")
+    {
         optimize = "calories";
+        valuePrepend = "";
+        valueAppend = " Cal";
+    }
     else
+    {
         optimize = "price";
+        valuePrepend = "$";
+        valueAppend = "";
+    }
     
     var sql = [];
     var sqlNameMatch = "";
@@ -192,7 +204,7 @@ app.post('/findItems', function(req, res) {
             var numStores = 2; // How to get this number?
             for (var i = 0; i < numStores; i++) {
                 sql.push("SELECT * FROM \
-                            (SELECT '" + qu[q] + "' AS query, store.name AS storeName, store.store_ID, stocks.name AS productName, " + optimize + " \
+                            (SELECT '" + qu[q] + "' AS query, store.name AS storeName, store.store_ID, stocks.product_name AS productName, " + optimize + " AS optimize \
                             FROM stocks INNER JOIN store ON stocks.store_ID = store.store_ID \
                             WHERE (" + sqlNameMatch + ") AND stocks.store_ID = " + i + " \
                             ORDER BY " + optimize + " ASC \
@@ -215,7 +227,7 @@ app.post('/findItems', function(req, res) {
                 
                 for (var i in rows)
                 {
-                    foodList.push({query: rows[i].query, storeName: rows[i].storeName, productName: rows[i].productName, price: rows[i].price.toFixed(2)});
+                    foodList.push({query: rows[i].query, storeName: rows[i].storeName, productName: rows[i].productName, price: rows[i].optimize.toFixed(2)});
 
                     if (stores.indexOf(rows[i].storeName) < 0) {
                         stores.push(rows[i].storeName, rows[i].store_ID);
@@ -228,7 +240,7 @@ app.post('/findItems', function(req, res) {
                     var totalPrice = 0;
                     for (r in rows) {
                         if (rows[r].storeName == stores[i]) {
-                            totalPrice += rows[r].price;
+                            totalPrice += rows[r].optimize;
                         }
                     }
                 
@@ -257,6 +269,8 @@ app.post('/findItems', function(req, res) {
                     groceries: foodList,
                     missingGroceries: notAtStore,
                     storeList: stores_ids_prices,
+                    valuePrepend: valuePrepend,
+                    valueAppend: valueAppend,
                     cache: false
                 });
             });
@@ -270,6 +284,8 @@ app.post('/findItems', function(req, res) {
                     groceries: [],
                     missingGroceries: [],
                     storeList: [],
+                    valuePrepend: valuePrepend,
+                    valueAppend: valueAppend,
                     cache: false
                 });
     }

@@ -21,7 +21,7 @@
             <div class="item" <% if(store.hasAll == false){ %>style="background-color:#ff8080;"<%}%>>
               <input type="radio" name="store" onclick="storeSelect(<%= store.storeID %>);" value="<%= store.storeName %>"
               <% if(store.storeID == initiallySelected){ %> checked="checked" <% } %> > <span style="padding-left:8px;"><%= store.storeName %> </span>
-              <span style="position:absolute;right:10px">Total: $<%= store.total %></span><br>
+              <span style="position:absolute;right:10px">Total: <%= valuePrepend %><%= store.total %></span><br>
             </div>
           <% }); %>
         </form>
