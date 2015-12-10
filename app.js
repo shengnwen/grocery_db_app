@@ -24,10 +24,6 @@ app.use( express.static( path.join( __dirname, 'public' )) );
 app.use(express.cookieParser('1234567890QWERTY'));
 app.use(express.session());
 
-// session
-app.use(express.cookieParser('1234567890QWERTY'));
-app.use(express.session());
-
 app.post("/addNewUser", userRouter.addNewUser);
 app.get( '/', function(req, res) { res.render( 'layout')});
 app.get( '/index', function(req, res) { res.render( 'index')});
