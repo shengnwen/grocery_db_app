@@ -20,7 +20,9 @@ app.set( 'view engine', 'ejs' );
 app.use( express.logger( 'dev' ) );
 app.use( express.urlencoded() );
 app.use( express.static( path.join( __dirname, 'public' )) );
-//app.use(express.cookieParser());
+// sesion
+app.use(express.cookieParser('1234567890QWERTY'));
+app.use(express.session());
 
 app.post("/addNewUser", userRouter.addNewUser);
 app.post("/userLogin", userRouter.userLogin);
