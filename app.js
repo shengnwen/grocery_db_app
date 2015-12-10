@@ -30,7 +30,7 @@ app.get( '/login', function(req, res) { res.render( 'login')});
 // send back form
 app.get( '/itemChoices', function(req, res) {
     db = new sqlite3.Database('groceries.sqlite');
-    
+
     var x;
     
     //clean the list, and sort it into a list of words to require and to exclude
@@ -112,7 +112,7 @@ app.get( '/itemChoices', function(req, res) {
                 {
                     foodTypes.push(rows[i].food_type_name);
                 }
-                foodNames.push({name: rows[i].name, type: rows[i].food_type_name});
+                foodNames.push({name: rows[i].product_name, type: rows[i].food_type_name});
             }
             
             if (foodTypes.length !== 0)
@@ -182,7 +182,7 @@ app.post('/findItems', function(req, res) {
                 names = req.body[qu[q]].map(function(x){return x.replace(/\'/g, "''")})
                 for (i in names)
                 {
-                    sqlNameMatch += "stocks.name = '" + names[i] + "'";
+                    sqlNameMatch += "stocks.product_name = '" + names[i] + "'";
                     if (i != names.length - 1)
                     {
                         count += 1;
@@ -320,8 +320,6 @@ function sqlQuantityRequest(query, possibleTerms, attribute, mult)
             sqlQuantity += attribute + " = " + oz * mult;
         }
     }
-    
-    console.log("A = " + attribute + " H = " + query);
     
     return {quantity: sqlQuantity, cleanedQuery: query};
 }
