@@ -14,8 +14,8 @@ exports.userLogin = function(req, res) {
         if (rows == null || rows.length == 0) {
             console.log("rows is not exist");
         } else{
-            console.log("rows is  exist:" + rows);
-            res.session
+            console.log("rows is  exist:" + rows[0].user_ID);
+            res.session.user_id = rows[0].user_ID;
             res.redirect('/');
 
         }

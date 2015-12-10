@@ -20,12 +20,12 @@ app.set( 'view engine', 'ejs' );
 app.use( express.logger( 'dev' ) );
 app.use( express.urlencoded() );
 app.use( express.static( path.join( __dirname, 'public' )) );
-<<<<<<< HEAD
+//<<<<<<< HEAD
 // sesion
 app.use(express.cookieParser('1234567890QWERTY'));
 app.use(express.session());
-=======
->>>>>>> f880805da36b887c9a4e32a71cb7210f08c69a9a
+//=======
+//>>>>>>> f880805da36b887c9a4e32a71cb7210f08c69a9a
 
 app.post("/addNewUser", userRouter.addNewUser);
 app.get( '/', function(req, res) { res.render( 'layout')});
