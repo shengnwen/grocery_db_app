@@ -22,7 +22,7 @@ create table food_type(
 
 create table product(
      product_ID     int,
-     product_name           varchar(100),
+     product_name   varchar(100),
      calories       int,
      food_type_name varchar(100),
      primary key (product_ID),
