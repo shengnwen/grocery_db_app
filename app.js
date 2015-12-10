@@ -149,6 +149,8 @@ app.post('/findItems', function(req, res) {
     
     db = new sqlite3.Database('groceries.sqlite');
     
+    console.log(req.body);
+    
     var optimize, valuePrepend, valueAppend;
     
     if (req.body.optimize === "calories")
