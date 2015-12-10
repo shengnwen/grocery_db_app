@@ -23,9 +23,16 @@ app.use( express.static( path.join( __dirname, 'public' )) );
 
 app.use(express.cookieParser('1234567890QWERTY'));
 app.use(express.session());
-
+app.post("/userLogIn", userRouter.userLogin);
 app.post("/addNewUser", userRouter.addNewUser);
-app.get( '/', function(req, res) { res.render( 'layout')});
+app.get( '/', function(req, res) {
+        if (req.session.user_id) {
+            res.render('layout')
+        } else {
+            res.redirect('/login');
+        }
+    }
+);
 app.get( '/index', function(req, res) { res.render( 'index')});
 app.get( '/sign-up', function(req, res) { res.render( 'sign-up')});
 app.get( '/login', function(req, res) { res.render( 'login')});
