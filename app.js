@@ -20,12 +20,18 @@ app.set( 'view engine', 'ejs' );
 app.use( express.logger( 'dev' ) );
 app.use( express.urlencoded() );
 app.use( express.static( path.join( __dirname, 'public' )) );
+<<<<<<< HEAD
 //<<<<<<< HEAD
 // sesion
 app.use(express.cookieParser('1234567890QWERTY'));
 app.use(express.session());
 //=======
 //>>>>>>> f880805da36b887c9a4e32a71cb7210f08c69a9a
+//=======
+// sesion
+app.use(express.cookieParser('1234567890QWERTY'));
+app.use(express.session());
+//>>>>>>> b6e4d6c93cb9cf03701e89bb2fb2bbbc662adf3b
 
 app.post("/addNewUser", userRouter.addNewUser);
 app.get( '/', function(req, res) { res.render( 'layout')});
@@ -157,7 +163,7 @@ app.post('/findItems', function(req, res) {
     
     console.log(req.body);
     
-    var optimize, valuePrepend, valueAppend, fromAddition;
+    var optimize, valuePrepend, valueAppend, fromAddition, decimals;
     
     if (req.body.optimize === "calories")
     {
@@ -165,6 +171,7 @@ app.post('/findItems', function(req, res) {
         fromAddition = "product NATURAL JOIN";
         valuePrepend = "";
         valueAppend = " Cal";
+        decimals = 0;
     }
     else
     {
@@ -172,6 +179,7 @@ app.post('/findItems', function(req, res) {
         fromAddition = "";
         valuePrepend = "$";
         valueAppend = "";
+        decimals = 2;
     }
     
     var sql = [];
@@ -237,7 +245,7 @@ app.post('/findItems', function(req, res) {
                 
                 for (var i in rows)
                 {
-                    foodList.push({query: rows[i].query, storeName: rows[i].storeName, productName: rows[i].productName, price: rows[i].optimize.toFixed(2)});
+                    foodList.push({query: rows[i].query, storeName: rows[i].storeName, productName: rows[i].productName, price: rows[i].optimize.toFixed(decimals)});
 
                     if (stores.indexOf(rows[i].storeName) < 0) {
                         stores.push(rows[i].storeName, rows[i].store_ID);
@@ -264,7 +272,7 @@ app.post('/findItems', function(req, res) {
                                 function(x){return {storeID: stores[i + 1], query: x};}));
                     console.log(totalPrice);
                     stores_ids_prices.push({storeName: stores[i], storeID: stores[i+1],
-                                        total: totalPrice.toFixed(2), hasAll: hasAll});
+                                        total: totalPrice.toFixed(decimals), hasAll: hasAll});
                 }       
              
                 var  totalComp = function(a, b)
