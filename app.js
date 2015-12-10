@@ -204,10 +204,10 @@ app.post('/findItems', function(req, res) {
             var numStores = 2; // How to get this number?
             for (var i = 0; i < numStores; i++) {
                 sql.push("SELECT * FROM \
-                            (SELECT '" + qu[q] + "' AS query, store_name AS storeName, store.store_ID, product_name AS productName, " + optimize + " AS optimize \
-                            FROM stocks INNER JOIN store ON stocks.store_ID = store.store_ID \
-                            WHERE (" + sqlNameMatch + ") AND stocks.store_ID = " + i + " \
-                            ORDER BY " + optimize + " ASC \
+                            (SELECT '" + qu[q] + "' AS query, store_name AS storeName, store_ID, product_name AS productName, " + optimize + " AS optimize \
+                            FROM stocks NATURAL JOIN store\
+                            WHERE (" + sqlNameMatch + ") AND price IS NOT NULL AND store_ID = " + i + " \
+                            ORDER BY optimize ASC \
                             LIMIT 1)");
             }
         }
@@ -240,6 +240,7 @@ app.post('/findItems', function(req, res) {
                     var totalPrice = 0;
                     for (r in rows) {
                         if (rows[r].storeName == stores[i]) {
+                            console.log("HERE");
                             totalPrice += rows[r].optimize;
                         }
                     }
@@ -251,7 +252,7 @@ app.post('/findItems', function(req, res) {
                     notAtStore = notAtStore.concat(qu.filter(
                             function(x){return queriesAtStore.indexOf(x) === -1;}).map(
                                 function(x){return {storeID: stores[i + 1], query: x};}));
-                
+                    console.log(totalPrice);
                     stores_ids_prices.push({storeName: stores[i], storeID: stores[i+1],
                                         total: totalPrice.toFixed(2), hasAll: hasAll});
                 }       
