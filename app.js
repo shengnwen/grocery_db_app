@@ -92,7 +92,7 @@ app.get( '/itemChoices', function(req, res) {
         sqlNot = " EXCEPT SELECT * FROM (SELECT product_name, food_type_name FROM product WHERE" + sqlNotPieces.join(" OR ") + ")";
     }
     else
-        sqlNot = ""
+        sqlNot = "";
     
     
     
