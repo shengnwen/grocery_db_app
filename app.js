@@ -99,7 +99,7 @@ app.get( '/itemChoices', function(req, res) {
     //combine all sql pieces together
     sql = "SELECT product_name, food_type_name FROM (SELECT product_name, food_type_name, oz, fl_oz, count FROM product WHERE" + sqlAndPieces.join(" AND ") + ")" + sqlQuantity + sqlNot + ";";
 
-    console.log(sql);
+    //console.log(sql);
     db.all(sql,
         function(err, rows) {
             sideHTML = "Filtering:<br>";
@@ -204,7 +204,7 @@ app.post('/findItems', function(req, res) {
             var numStores = 2; // How to get this number?
             for (var i = 0; i < numStores; i++) {
                 sql.push("SELECT * FROM \
-                            (SELECT '" + qu[q] + "' AS query, store.name AS storeName, store.store_ID, stocks.product_name AS productName, " + optimize + " AS optimize \
+                            (SELECT '" + qu[q] + "' AS query, store_name AS storeName, store.store_ID, product_name AS productName, " + optimize + " AS optimize \
                             FROM stocks INNER JOIN store ON stocks.store_ID = store.store_ID \
                             WHERE (" + sqlNameMatch + ") AND stocks.store_ID = " + i + " \
                             ORDER BY " + optimize + " ASC \
@@ -215,7 +215,7 @@ app.post('/findItems', function(req, res) {
     
     if (sql.length !== 0)
     {
-        console.log(sql.join(" UNION ") + ";");
+        //console.log(sql.join(" UNION ") + ";");
 
         db.all(sql.join(" UNION ") + ";", function(err, rows) {
                 console.log(err);

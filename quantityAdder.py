@@ -25,7 +25,7 @@ conn.text_factory = str;
 
 c = conn.cursor()
 
-#addColumns(c);
+addColumns(c);
 
 c.execute("SELECT * FROM product WHERE fl_oz IS NOT NULL");
 for i in range(20):
