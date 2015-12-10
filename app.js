@@ -191,7 +191,7 @@ app.post('/findItems', function(req, res) {
             var numStores = 2; // How to get this number?
             for (var i = 0; i < numStores; i++) {
                 sql.push("SELECT * FROM \
-                            (SELECT '" + qu[q] + "' AS query, store.name AS storeName, store.store_ID, stocks.name AS productName, " + optimize + " \
+                            (SELECT '" + qu[q] + "' AS query, store.name AS storeName, store.store_ID, stocks.name AS productName, " + optimize + " AS optimize \
                             FROM stocks INNER JOIN store ON stocks.store_ID = store.store_ID \
                             WHERE (" + sqlNameMatch + ") AND stocks.store_ID = " + i + " \
                             ORDER BY " + optimize + " ASC \
@@ -214,7 +214,7 @@ app.post('/findItems', function(req, res) {
                 
                 for (var i in rows)
                 {
-                    foodList.push({query: rows[i].query, storeName: rows[i].storeName, productName: rows[i].productName, price: rows[i].price.toFixed(2)});
+                    foodList.push({query: rows[i].query, storeName: rows[i].storeName, productName: rows[i].productName, price: rows[i].optimize.toFixed(2)});
 
                     if (stores.indexOf(rows[i].storeName) < 0) {
                         stores.push(rows[i].storeName, rows[i].store_ID);
@@ -227,7 +227,7 @@ app.post('/findItems', function(req, res) {
                     var totalPrice = 0;
                     for (r in rows) {
                         if (rows[r].storeName == stores[i]) {
-                            totalPrice += rows[r].price;
+                            totalPrice += rows[r].optimize;
                         }
                     }
                 
@@ -256,6 +256,8 @@ app.post('/findItems', function(req, res) {
                     groceries: foodList,
                     missingGroceries: notAtStore,
                     storeList: stores_ids_prices,
+                    valuePrepend: "$",
+                    valueAppend: "",
                     cache: false
                 });
             });
@@ -269,6 +271,8 @@ app.post('/findItems', function(req, res) {
                     groceries: [],
                     missingGroceries: [],
                     storeList: [],
+                    valuePrepend: "$",
+                    valueAppend: "",
                     cache: false
                 });
     }
