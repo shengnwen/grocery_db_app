@@ -137,13 +137,19 @@ app.get( '/itemChoices', function(req, res) {
 });
 
 app.post('/findItems', function(req, res) {
-
+    
+    
     if (typeof req.body.queries === "string")
         qu = [req.body.queries];
     else
 	    qu = req.body.queries;
     
     db = new sqlite3.Database('groceries.sqlite');
+    
+    if (req.body.optimize === "calories")
+        optimize = "calories";
+    else
+        optimize = "price";
     
     var sql = [];
     var sqlNameMatch = "";
@@ -185,10 +191,10 @@ app.post('/findItems', function(req, res) {
             var numStores = 2; // How to get this number?
             for (var i = 0; i < numStores; i++) {
                 sql.push("SELECT * FROM \
-                            (SELECT '" + qu[q] + "' AS query, store.name AS storeName, store.store_ID, stocks.name AS productName, price \
+                            (SELECT '" + qu[q] + "' AS query, store.name AS storeName, store.store_ID, stocks.name AS productName, " + optimize + " \
                             FROM stocks INNER JOIN store ON stocks.store_ID = store.store_ID \
                             WHERE (" + sqlNameMatch + ") AND stocks.store_ID = " + i + " \
-                            ORDER BY price ASC \
+                            ORDER BY " + optimize + " ASC \
                             LIMIT 1)");
             }
         }
@@ -234,16 +240,16 @@ app.post('/findItems', function(req, res) {
                                 function(x){return {storeID: stores[i + 1], query: x};}));
                 
                     stores_ids_prices.push({storeName: stores[i], storeID: stores[i+1],
-                                        totalPrice: totalPrice.toFixed(2), hasAll: hasAll});
+                                        total: totalPrice.toFixed(2), hasAll: hasAll});
                 }       
              
-                var  totalPriceComp = function(a, b)
+                var  totalComp = function(a, b)
                 {
-                    return parseFloat(a.totalPrice) - parseFloat(b.totalPrice);
+                    return parseFloat(a.total) - parseFloat(b.total);
                 }
             
-                stores_ids_prices = stores_ids_prices.filter(function(x){return x.hasAll;}).sort(totalPriceComp).concat(
-                    stores_ids_prices.filter(function(x){return !x.hasAll;}).sort(totalPriceComp));
+                stores_ids_prices = stores_ids_prices.filter(function(x){return x.hasAll;}).sort(totalComp).concat(
+                    stores_ids_prices.filter(function(x){return !x.hasAll;}).sort(totalComp));
 
                 res.render( 'itemsSearch', {
                     initiallySelected: stores_ids_prices[0].storeID,
