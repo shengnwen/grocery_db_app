@@ -330,6 +330,7 @@ function sqlQuantityRequest(query, possibleTerms, attribute, mult)
         }
     }
     
+    console.log("found = " + sqlQuantity + " query = " + query)
     return {quantity: sqlQuantity, cleanedQuery: query};
 }
 
