@@ -20,8 +20,10 @@ app.set( 'view engine', 'ejs' );
 app.use( express.logger( 'dev' ) );
 app.use( express.urlencoded() );
 app.use( express.static( path.join( __dirname, 'public' )) );
+//app.use(express.cookieParser());
 
 app.post("/addNewUser", userRouter.addNewUser);
+app.post("/userLogin", userRouter.userLogin);
 app.get( '/', function(req, res) { res.render( 'layout')});
 app.get( '/index', function(req, res) { res.render( 'index')});
 app.get( '/sign-up', function(req, res) { res.render( 'sign-up')});
