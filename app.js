@@ -258,7 +258,6 @@ app.post('/findItems', function(req, res) {
                     var totalPrice = 0;
                     for (r in rows) {
                         if (rows[r].storeName == stores[i]) {
-                            console.log("HERE");
                             totalPrice += rows[r].optimize;
                         }
                     }
