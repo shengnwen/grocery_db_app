@@ -16,7 +16,8 @@ def updateTable(items, column):
     for x in items:
         #name = x[0].replace("'", "\\'");
         #print name
-        sql = "Update product Set " + column + "=" + str(x[1]) + " WHERE name=\"" + x[0] + "\"";
+        print x[0];
+        sql = "Update product Set " + column + "=" + str(x[1]) + " WHERE product_name=\"" + x[0] + "\"";
         c.execute(sql);
     
 conn = sqlite3.connect('groceries.sqlite')
@@ -30,7 +31,7 @@ c.execute("SELECT * FROM product WHERE fl_oz IS NOT NULL");
 for i in range(20):
     print c.fetchone();
 
-c.execute("SELECT name FROM product");
+c.execute("SELECT product_name FROM product");
 names = c.fetchall();
 
 #create regexs to find units of mass
@@ -78,9 +79,20 @@ pack_of_items = [(x[0], int(pack_of_re.search(x[0]).group(2))) for x in names if
 
 numbered_items = list(set(count_items + pack_of_items));
 
+print "HERE";
+
 updateTable(mass_items, "oz");
+
+print "updated oz";
+
 updateTable(volume_items, "fl_oz");
+
+print "updated fl_oz";
+
+
 updateTable(numbered_items, "count");
+
+print "update count";
 
 conn.commit();
 
