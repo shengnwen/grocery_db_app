@@ -193,27 +193,26 @@
                 for (var j = 0; j < checkboxes.length; j++) {
                     if (checkboxes[j].checked == true && (checkboxes[j].className === dropdown.options[dropdown.selectedIndex].text
                                                         ||dropdown.options[dropdown.selectedIndex].text === "All" )) {
-                        $('#hiddenItemForm').append( '<input type="hidden" name="' + foodList[i].name + '" value="' + checkboxes[j].value + '"><br>');
+                        $('#hiddenItemForm').append( '<input style="display:none" name="' + foodList[i].name + '" value="' + checkboxes[j].value + '">');
                     }
                 }
             }
 
             // also send the list of queries
             for (var i = 0; i < foodList.length; i++) {
-                $('#hiddenItemForm').append('<input type="hidden" name="queries" value="' + foodList[i].name + '"><br>');
+                $('#hiddenItemForm').append('<input style="display:none" name="queries" value="' + foodList[i].name + '">');
             }
             
             //send whether to search for price or calories
             var selectOptimization = document.getElementById("selectOptimization");
-            alert(selectOptimization);
-            var radioOptimize = selectOptimization.getElementsByName('optimize');
-            alert(radioOptimize);
+            var radioOptimize = selectOptimization.elements['optimize'];
 
             for (i in radioOptimize)
             {
                 if (radioOptimize[i].checked)
                 {
-                    ('#hiddenItemForm').append('<input type="hidden" name="' + radios[i].value + '" value="price"><br>');
+                    alert(radioOptimize[i].value);
+                    $('#hiddenItemForm').append('<input style="display:none" name="optimize" value="' + radioOptimize[i].value + '">');
                 }
             }
 
