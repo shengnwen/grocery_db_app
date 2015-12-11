@@ -87,7 +87,6 @@
                 itemsListDiv.insertBefore(div);
             }
         }
-        console.log(foodList);
         autoFindButtonDisabled();
     }
     
@@ -200,7 +199,16 @@
 
             // also send the list of queries
             for (var i = 0; i < foodList.length; i++) {
+                var id = foodList[i].id;
+                var frame = document.getElementById('itemChoices' + id);
+                var filter = frame.contentWindow.document.getElementsByName('filter');
                 $('#hiddenItemForm').append('<input style="display:none" name="queries" value="' + foodList[i].name + '">');
+                
+                for (f in filter)
+                {
+                    if (filter[f].selected)
+                        $('#hiddenItemForm').append('<input style="display:none" name="' + foodList[i].name + 'Filter" value="' + filter[f].value + '">');
+                }
             }
             
             //send whether to search for price or calories

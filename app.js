@@ -201,7 +201,7 @@ app.post('/findItems', function(req, res) {
                 names = req.body[qu[q]].map(function(x){return x.replace(/\'/g, "''")})
                 for (i in names)
                 {
-                    sqlNameMatch += "stocks.product_name = '" + names[i] + "'";
+                    sqlNameMatch += "product_name = '" + names[i] + "'";
                     if (i != names.length - 1)
                     {
                         count += 1;
@@ -223,7 +223,7 @@ app.post('/findItems', function(req, res) {
             var numStores = 2; // How to get this number?
             for (var i = 0; i < numStores; i++) {
                 sql.push("SELECT * FROM \
-                            (SELECT '" + qu[q] + "' AS query, store_name AS storeName, store_ID, product_name AS productName, " + optimize + " AS optimize \
+                            (SELECT '" + qu[q] + "' AS query, '" + req.body[qu[q] + "Filter"] + "' AS queryType, store_name AS storeName, store_ID, product_name AS productName, " + optimize + " AS optimize \
                             FROM " + fromAddition + " stocks NATURAL JOIN store\
                             WHERE (" + sqlNameMatch + ") AND optimize IS NOT NULL AND store_ID = " + i + " \
                             ORDER BY optimize ASC \
@@ -252,7 +252,16 @@ app.post('/findItems', function(req, res) {
                         stores.push(rows[i].storeName, rows[i].store_ID);
                     }
                 }
-            
+                
+                console.log(req.session.user_id);
+                if (typeof req.session.user_id != 'undefined')
+                {
+                    addToHistory  = "INSERT INTO user_query_history (user_ID, query, food_type_name) \
+                                VALUES (" + req.session.user_id + ", '" + rows[i].query + "', '" + rows[i].queryType + "');";
+                    console.log(addToHistory);
+                    db.run(addToHistory);
+                }
+                
                 var notAtStore = [];
             
                 for (var i = 0; i < stores.length; i += 2) {
