@@ -44,4 +44,20 @@ exports.addNewUser = function(req, res) {
     console.log("add new user!");
     res.redirect('/login');//('login');
 };
+exports.showShoppingLists = function(req, res) {
+    console.log("show history" + req.session.user_id);
+
+    //var sql = "select * from "
+    var sql = "select shopping_list.created_date, list_items.product_name from list_items, shopping_list where list_items.list_ID = shopping_list.list_ID and shopping_list.user_id = " + req.session.user_id;
+    db.all(sql, function(err, rows){
+        var shopping_items = [];
+        for (var i in rows) {
+            console.log(rows[i].created_date + "|" + rows[i].product_name);
+            shopping_items.push([rows[i].created_date, rows[i].product_name]);
+        }
+        res.render("history", {shopping_lists: shopping_items});
+    });
+
+
+};
 

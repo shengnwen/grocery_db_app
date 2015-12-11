@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Grocery List App</title>
+    <link rel='stylesheet' href='/stylesheets/screen.css' />
+      <style>
+          table, th, td {
+              border: 1px solid black;
+          }
+          th {
+              height: 40px;
+              width:150px;
+          }
+      </style>
+    <!--[if lt IE 9]>
+    <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <h1 id="page-title">Shopping Lists History</h1>
+    
+    <!-- <iframe class="item-choice" id="itemChoices" width=200 style="display: none">
+    </iframe> -->
+    <div id="list">
+        <table>
+            <tr>
+                <th>
+                    Shopping List Date
+                </th>
+                <th>
+                    Item Info
+                </th>
+
+            </tr>
+            <% shopping_lists.forEach( function ( item ) { %>
+            <tr>
+                <td>
+                    <%= item[0] %>
+                </td>
+                <td>
+                    <%= item[1] %>
+                </td>
+            </tr>
+            <% }); %>
+
+        </table>
+    </div>
+
+  <script src="js/jquery-1.11.3.js"></script>
+
+  <script>
+    var foodList = [];
+    var _nextId = 0;
+    var canvas = document.getElementById("canvas");
+
+    window.addEventListener('mousedown', onMouseDown, false);
+
+    function onMouseDown(event)
+    {
+        for	(j = 0; j < foodList.length; j++) {
+            itemChoices = document.getElementById("itemChoices" + foodList[j].id);
+            itemChoices.style.display = "none";
+        }
+    }
+
+    //automatically sets the find button to disabled or enabled, based on whether there is anything in the list
+    function autoFindButtonDisabled()
+    {
+        findButton = document.getElementById("findButton");
+        findButton.disabled = (foodList.length === 0);
+    }
+
+    //adds a new food to the list, and assigns it a unique id
+    function addToFoodList(food)
+    {
+        if (food !== "")
+        {
+            newItem = { "id": getNewUniqueId(),
+                        "name": food};
+
+            foodList.push(newItem);
+
+            itemsListDiv = document.getElementById("itemsList");
+
+            div = document.createElement("div");
+            div.id = "item" + newItem.id;
+            div.innerHTML = htmlForItem(newItem.name, newItem.id);
+
+            if (itemsListDiv.hasChildNodes())
+            {
+                itemsListDiv.insertBefore(div, itemsListDiv.childNodes[0]);
+            }
+            else
+            {
+                itemsListDiv.insertBefore(div);
+            }
+        }
+        console.log(foodList);
+        autoFindButtonDisabled();
+    }
+
+    //updates the name of an existing item
+    function updateFoodList(food, i)
+    {
+        if (food !== "")
+        {
+            foodListLoc = foodListWithID(i);
+            console.log(i);
+            console.log(foodListLoc);
+            foodList[foodListLoc].name = food;
+
+            //to prevent the reloading of the iframe page from resetting the filtering
+            var itemChoices = document.getElementById("itemChoices" + i);
+            var dropdown = itemChoices.contentWindow.document.getElementById('food_type_selector');
+
+            itemChoices.src = getItemFrameSRC(food, dropdown.options[dropdown.selectedIndex].text);
+        }
+    }
+
+    //removes an item from the food list
+    function deleteButtonClick(i)
+    {
+        console.log(i);
+        //find where in foodList the item being deleted is
+        foodListLoc = foodListWithID(i);
+
+        foodList.splice(foodListLoc, 1);
+
+        var item = document.getElementById("item" + i);
+        var itemListDiv = document.getElementById("itemsList");
+        itemListDiv.removeChild(item);
+
+        autoFindButtonDisabled();
+    }
+
+
+    //returns the position in the foodList of the element with id of argument id
+    //returns -1 if there is no such element
+    function foodListWithID(id)
+    {
+        console.log(foodList);
+        for (j in foodList)
+        {
+            if (foodList[j].id === id)
+                return j;
+        }
+
+        return -1;
+    }
+
+    //returns a unique int
+    function getNewUniqueId()
+    {
+        return _nextId++;
+    }
+
+    //opens a subpage which displays various options for the item selected in the list
+    //and closes all others
+    function openItemChoices(i)
+    {
+        for	(j = 0; j < foodList.length; j++) {
+            itemChoices = document.getElementById("itemChoices" + foodList[j].id);
+            itemChoices.style.display = "none";
+        }
+
+        itemChoices = document.getElementById("itemChoices" + i);
+        itemChoices.style.display = "inline";
+    }
+
+    //returns the html needed for one item selector and associated choosing window
+    function htmlForItem(item, i)
+    {
+        return '<iframe class="item-choice" id="itemChoices' + i +
+        '" src ="' + getItemFrameSRC(item, "All") + '" scrolling="yes" style="display: none">' +
+         '</iframe>' +
+        '<div class="item" onclick="openItemChoices(' + i + ')">' +
+        '<input class="update-input" type="text" name="content" onKeyDown="updateFoodList(value,' + i + ')"' +
+        'onInput="updateFoodList(value,' + i + ')" value="' + item + '" />' +
+        '<button id=button"' + i +'" class="del-btn" type="button" onclick="deleteButtonClick('+ i + ')"  title="Delete this grocery item">Delete</button>' +
+        '</div>'
+    }
+
+    function getItemFrameSRC(name, selected)
+    {
+        return "/itemChoices?item=" + name + "&selected=" + selected;
+    }
+
+   $(document).ready(function() {
+        $('#hiddenItemForm').submit(function(e) {
+
+            $('#hiddenItemForm').html('<input id="findButton" class="find" type="submit" value="Find">');
+            autoFindButtonDisabled();
+
+            // for all iframes
+            for (var i = 0; i < foodList.length; i++) {
+                var id = foodList[i].id;
+                var frame = document.getElementById('itemChoices' + id);
+                var checkboxes = frame.contentWindow.document.getElementsByName('content');
+                var dropdown = frame.contentWindow.document.getElementById('food_type_selector');
+                // for all checkboxes
+                for (var j = 0; j < checkboxes.length; j++) {
+                    if (checkboxes[j].checked == true && (checkboxes[j].className === dropdown.options[dropdown.selectedIndex].text
+                                                        ||dropdown.options[dropdown.selectedIndex].text === "All" )) {
+                        $('#hiddenItemForm').append( '<input style="display:none" name="' + foodList[i].name + '" value="' + checkboxes[j].value + '">');
+                    }
+                }
+            }
+
+            // also send the list of queries
+            for (var i = 0; i < foodList.length; i++) {
+                $('#hiddenItemForm').append('<input style="display:none" name="queries" value="' + foodList[i].name + '">');
+            }
+
+            //send whether to search for price or calories
+            var selectOptimization = document.getElementById("selectOptimization");
+            var radioOptimize = selectOptimization.elements['optimize'];
+
+            for (i in radioOptimize)
+            {
+                if (radioOptimize[i].checked)
+                {
+                    $('#hiddenItemForm').append('<input style="display:none" name="optimize" value="' + radioOptimize[i].value + '">');
+                }
+            }
+
+            return true;
+        });
+    })
+    function showHistory() {
+        window.location.href = "/showHistory";
+    }
+  </script>
+  </body>
+</html>
+
