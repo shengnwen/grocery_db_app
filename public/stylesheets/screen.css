@@ -134,6 +134,20 @@ body {
     float: right;
 }
 
+.radioOpt {
+    margin-top:20px;
+    margin-left: 200px;
+    clear: left;
+    display:inline;
+}
+
+.history {
+    margin-top: 30px;
+    margin-left: 200px;
+    clear: left;
+    display:inline;
+}
+
 .help {
     position: relative;
     float: right;
