@@ -248,6 +248,20 @@ app.post('/findItems', function(req, res) {
     if (sql.length !== 0)
     {
         //console.log(sql.join(" UNION ") + ";");
+        
+        db.serialize(function() {
+            var sql = "insert into shopping_list(user_ID, created_date) values("+ req.session.user_id + ", Date('now'));";
+            db.run(sql);
+            sql = "select * from shopping_list where user_ID = " + req.session.user_id;
+            db.all(sql, function(err, rows){
+                var size = rows.length;
+                if (size != 0) {
+                    console.log("create shopping list id:" + rows[size - 1].list_ID);
+                    req.session.list_id = rows[size - 1].list_ID;
+                    //res.redirect('/');
+                }
+            });
+        });
 
         db.all(sql.join(" UNION ") + ";", function(err, rows) {
                 console.log(err);
@@ -257,6 +271,8 @@ app.post('/findItems', function(req, res) {
                 stores = [];
                 stores_ids_prices = [];
                 
+                var addedToList = [];
+
                 for (var i in rows)
                 {
                     foodList.push({query: rows[i].query, storeName: rows[i].storeName, productName: rows[i].productName, price: rows[i].optimize.toFixed(decimals)});
@@ -269,9 +285,19 @@ app.post('/findItems', function(req, res) {
                     if (typeof req.session.user_id != 'undefined')
                     {
                         addToHistory  = "INSERT INTO user_query_history (user_ID, query, food_type_name) \
-                                VALUES (" + req.session.user_id + ", '" + rows[i].query + "', '" + rows[i].queryType + "');";
+                                VALUES (" + req.session.user_id + ", '" + rows[i].query.replace(/\'/g, "''") + "', '" + rows[i].queryType.replace(/\'/g, "''") + "');";
                         console.log(addToHistory);
-                    db.run(addToHistory);
+                        db.run(addToHistory);
+                        
+                        var newName = rows[i].productName.replace(/\'/g, "''")
+                        if (addedToList.indexOf(newName) === -1)
+                        {
+                            addToList = "INSERT INTO list_items (list_ID, product_name) \
+                                    VALUES (" + req.session.list_id + ", '" + newName + "');";
+                            addedToList.push(newName);
+                        }
+                        console.log(addToList);
+                        db.run(addToList);
                     }
                 }
                 
@@ -292,7 +318,6 @@ app.post('/findItems', function(req, res) {
                     notAtStore = notAtStore.concat(qu.filter(
                             function(x){return queriesAtStore.indexOf(x) === -1;}).map(
                                 function(x){return {storeID: stores[i + 1], query: x};}));
-                    console.log(totalPrice);
                     stores_ids_prices.push({storeName: stores[i], storeID: stores[i+1],
                                         total: totalPrice.toFixed(decimals), hasAll: hasAll});
                 }       

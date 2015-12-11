@@ -25,27 +25,15 @@ exports.userLogin = function(req, res) {
             //var sql = "insert into shopping_list(user_ID, created_date) values(" + rows[0].user_ID + ", Date('now'))";
 
             req.session.user_id = rows[0].user_ID;
-            res.redirect('/createShoppingList');
+            res.redirect('/');
 
         }
     });
     //console.log(sid);
 };
 exports.createShoppingList = function(req, res) {
-    db = new sqlite3.Database('groceries.sqlite');
-    db.serialize(function() {
-        var sql = "insert into shopping_list(user_ID, created_date) values("+ req.session.user_id + ", Date('now'));";
-        db.run(sql);
-        sql = "select * from shopping_list where user_ID = " + req.session.user_id;
-        db.all(sql, function(err, rows){
-            var size = rows.length;
-            if (size != 0) {
-                console.log("create shopping list id:" + rows[size - 1].list_ID);
-                req.session.list_id = rows[size - 1].list_ID;
-                res.redirect('/');
-            }
-        });
-    });
+    //db = new sqlite3.Database('groceries.sqlite');
+    
 };
 exports.addNewUser = function(req, res) {
     db = new sqlite3.Database('groceries.sqlite');
@@ -64,16 +52,17 @@ exports.addNewUser = function(req, res) {
 };
 exports.showShoppingLists = function(req, res) {
     console.log("show history" + req.session.user_id);
-
+    db = new sqlite3.Database('groceries.sqlite');
     //var sql = "select * from "
     var sql = "select shopping_list.created_date, list_items.product_name from list_items, shopping_list where list_items.list_ID = shopping_list.list_ID and shopping_list.user_id = " + req.session.user_id;
-
+    console.log(sql);
     db.all(sql, function(err, rows){
         var shopping_items = [];
         for (var i in rows) {
             console.log(rows[i].created_date + "|" + rows[i].product_name);
             shopping_items.push([rows[i].created_date, rows[i].product_name]);
         }
+        
         res.render("history", {shopping_lists: shopping_items});
     });
 
