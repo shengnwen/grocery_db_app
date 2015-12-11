@@ -140,12 +140,25 @@ app.get( '/itemChoices', function(req, res) {
                 foodTypes.push(selected);
             }
             
-            res.render( 'sideBar', {
-                selected: selected,
-		        foodType: foodTypes,
-		        foodName: foodNames,
-		        cache: false
-	        });
+            queryHistory = "SELECT food_type_name FROM user_query_history WHERE user_ID = " + req.session.user_id + " AND query = '" + cleanedItem + "';"
+            console.log(queryHistory);
+            db.all(queryHistory,
+                function(err2, rows2) {
+                    var defaultFilter = "All";
+                    if (rows2.length !== 0)
+                    {
+                        defaultFilter = rows2[0].food_type_name;
+                        console.log("!!!!!!" + defaultFilter);
+                    }
+                
+                    res.render( 'sideBar', {
+                    selected: selected,
+		            foodType: foodTypes,
+		            foodName: foodNames,
+		            selected: defaultFilter,
+		            cache: false
+	            });
+	        })
         });
     
     
@@ -251,15 +264,15 @@ app.post('/findItems', function(req, res) {
                     if (stores.indexOf(rows[i].storeName) < 0) {
                         stores.push(rows[i].storeName, rows[i].store_ID);
                     }
-                }
-                
-                console.log(req.session.user_id);
-                if (typeof req.session.user_id != 'undefined')
-                {
-                    addToHistory  = "INSERT INTO user_query_history (user_ID, query, food_type_name) \
+                    
+                    console.log(req.session.user_id);
+                    if (typeof req.session.user_id != 'undefined')
+                    {
+                        addToHistory  = "INSERT INTO user_query_history (user_ID, query, food_type_name) \
                                 VALUES (" + req.session.user_id + ", '" + rows[i].query + "', '" + rows[i].queryType + "');";
-                    console.log(addToHistory);
+                        console.log(addToHistory);
                     db.run(addToHistory);
+                    }
                 }
                 
                 var notAtStore = [];
