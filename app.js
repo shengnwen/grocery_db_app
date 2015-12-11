@@ -27,12 +27,16 @@ app.post("/userLogIn", userRouter.userLogin);
 app.post("/addNewUser", userRouter.addNewUser);
 app.get( '/', function(req, res) {
         if (req.session.user_id) {
-            res.render('layout')
+            res.render('layout',
+                        {user_id: req.session.user_id})
         } else {
             res.redirect('/login');
         }
     }
 );
+
+app.get( '/setdefault', function(req, res) { req.session.user_id = -1;
+                                             res.redirect( '/')});
 app.get( '/index', function(req, res) { res.render( 'index')});
 app.get( '/sign-up', function(req, res) { res.render( 'sign-up')});
 app.get( '/login', function(req, res) { res.render( 'login')});
@@ -145,7 +149,7 @@ app.get( '/itemChoices', function(req, res) {
             db.all(queryHistory,
                 function(err2, rows2) {
                     var defaultFilter = "All";
-                    if (rows2.length !== 0)
+                    if (rows2.length !== 0 && req.session.user_id !== -1)
                     {
                         defaultFilter = rows2[0].food_type_name;
                         console.log("!!!!!!" + defaultFilter);
@@ -281,8 +285,7 @@ app.post('/findItems', function(req, res) {
                         stores.push(rows[i].storeName, rows[i].store_ID);
                     }
                     
-                    console.log(req.session.user_id);
-                    if (typeof req.session.user_id != 'undefined')
+                    if (typeof req.session.user_id !== 'undefined')
                     {
                         addToHistory  = "INSERT INTO user_query_history (user_ID, query, food_type_name) \
                                 VALUES (" + req.session.user_id + ", '" + rows[i].query.replace(/\'/g, "''") + "', '" + rows[i].queryType.replace(/\'/g, "''") + "');";

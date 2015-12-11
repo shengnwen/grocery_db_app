@@ -37,9 +37,9 @@
         <input type="radio" class="radioOpt" name="optimize" value="price" checked> Price
         <input type="radio" name="optimize" value="calories"> Calories
       </form>
-        <button id="helpButton" class="history" type="button"
+        <% if(user_id != -1){ %><button id="helpButton" class="history" type="button"
                 onclick='showHistory()'
-                title="Get instructions">Show History</button>
+                title="Get instructions">Show History</button> <% } %>
     </div>
 
   <script src="js/jquery-1.11.3.js"></script>
