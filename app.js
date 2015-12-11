@@ -36,7 +36,7 @@ app.get( '/', function(req, res) {
 app.get( '/index', function(req, res) { res.render( 'index')});
 app.get( '/sign-up', function(req, res) { res.render( 'sign-up')});
 app.get( '/login', function(req, res) { res.render( 'login')});
-
+app.get('/showHistory', userRouter.showShoppingLists);
 // send back form
 app.get( '/itemChoices', function(req, res) {
     db = new sqlite3.Database('groceries.sqlite');
@@ -111,7 +111,7 @@ app.get( '/itemChoices', function(req, res) {
     
     //combine all sql pieces together
     sql = "SELECT product_name, food_type_name FROM (SELECT product_name, food_type_name, oz, fl_oz, count FROM product WHERE" + sqlAndPieces.join(" AND ") + ")" + sqlQuantity + sqlNot + ";";
-
+    console.log(sql);
     //console.log(sql);
     db.all(sql,
         function(err, rows) {
