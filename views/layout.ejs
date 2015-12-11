@@ -32,6 +32,10 @@
       <form id="hiddenItemForm" method="POST" action="/findItems">
         <input id="findButton" class="find" type="submit" disabled="true" value="Find">
       </form>
+      <form id="selectOptimization">
+        <input type="radio" name="optimize" value="price" checked> Price
+        <input type="radio" name="optimize" value="calories"> Calories
+      </form>
     </div>
 
   <script src="js/jquery-1.11.3.js"></script>
@@ -175,6 +179,7 @@
 
    $(document).ready(function() {
         $('#hiddenItemForm').submit(function(e) {
+
             $('#hiddenItemForm').html('<input id="findButton" class="find" type="submit" value="Find">');
             autoFindButtonDisabled();
 
@@ -188,14 +193,26 @@
                 for (var j = 0; j < checkboxes.length; j++) {
                     if (checkboxes[j].checked == true && (checkboxes[j].className === dropdown.options[dropdown.selectedIndex].text
                                                         ||dropdown.options[dropdown.selectedIndex].text === "All" )) {
-                        $('#hiddenItemForm').append( '<input type="hidden" name="' + foodList[i].name + '" value="' + checkboxes[j].value + '"><br>');
+                        $('#hiddenItemForm').append( '<input style="display:none" name="' + foodList[i].name + '" value="' + checkboxes[j].value + '">');
                     }
                 }
             }
 
             // also send the list of queries
             for (var i = 0; i < foodList.length; i++) {
-                $('#hiddenItemForm').append('<input type="hidden" name="queries" value="' + foodList[i].name + '"><br>');
+                $('#hiddenItemForm').append('<input style="display:none" name="queries" value="' + foodList[i].name + '">');
+            }
+            
+            //send whether to search for price or calories
+            var selectOptimization = document.getElementById("selectOptimization");
+            var radioOptimize = selectOptimization.elements['optimize'];
+
+            for (i in radioOptimize)
+            {
+                if (radioOptimize[i].checked)
+                {
+                    $('#hiddenItemForm').append('<input style="display:none" name="optimize" value="' + radioOptimize[i].value + '">');
+                }
             }
 
             return true;

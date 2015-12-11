@@ -21,8 +21,18 @@ app.use( express.logger( 'dev' ) );
 app.use( express.urlencoded() );
 app.use( express.static( path.join( __dirname, 'public' )) );
 
+app.use(express.cookieParser('1234567890QWERTY'));
+app.use(express.session());
+app.post("/userLogIn", userRouter.userLogin);
 app.post("/addNewUser", userRouter.addNewUser);
-app.get( '/', function(req, res) { res.render( 'layout')});
+app.get( '/', function(req, res) {
+        if (req.session.user_id) {
+            res.render('layout')
+        } else {
+            res.redirect('/login');
+        }
+    }
+);
 app.get( '/index', function(req, res) { res.render( 'index')});
 app.get( '/sign-up', function(req, res) { res.render( 'sign-up')});
 app.get( '/login', function(req, res) { res.render( 'login')});
@@ -92,7 +102,7 @@ app.get( '/itemChoices', function(req, res) {
         sqlNot = " EXCEPT SELECT * FROM (SELECT product_name, food_type_name FROM product WHERE" + sqlNotPieces.join(" OR ") + ")";
     }
     else
-        sqlNot = "";
+        sqlNot = ""
     
     
     
@@ -149,19 +159,25 @@ app.post('/findItems', function(req, res) {
     
     db = new sqlite3.Database('groceries.sqlite');
     
-    var optimize, valuePrepend, valueAppend;
+    console.log(req.body);
+    
+    var optimize, valuePrepend, valueAppend, fromAddition, decimals;
     
     if (req.body.optimize === "calories")
     {
         optimize = "calories";
+        fromAddition = "product NATURAL JOIN";
         valuePrepend = "";
         valueAppend = " Cal";
+        decimals = 0;
     }
     else
     {
         optimize = "price";
+        fromAddition = "";
         valuePrepend = "$";
         valueAppend = "";
+        decimals = 2;
     }
     
     var sql = [];
@@ -205,8 +221,8 @@ app.post('/findItems', function(req, res) {
             for (var i = 0; i < numStores; i++) {
                 sql.push("SELECT * FROM \
                             (SELECT '" + qu[q] + "' AS query, store_name AS storeName, store_ID, product_name AS productName, " + optimize + " AS optimize \
-                            FROM stocks NATURAL JOIN store\
-                            WHERE (" + sqlNameMatch + ") AND price IS NOT NULL AND store_ID = " + i + " \
+                            FROM " + fromAddition + " stocks NATURAL JOIN store\
+                            WHERE (" + sqlNameMatch + ") AND optimize IS NOT NULL AND store_ID = " + i + " \
                             ORDER BY optimize ASC \
                             LIMIT 1)");
             }
@@ -227,7 +243,7 @@ app.post('/findItems', function(req, res) {
                 
                 for (var i in rows)
                 {
-                    foodList.push({query: rows[i].query, storeName: rows[i].storeName, productName: rows[i].productName, price: rows[i].optimize.toFixed(2)});
+                    foodList.push({query: rows[i].query, storeName: rows[i].storeName, productName: rows[i].productName, price: rows[i].optimize.toFixed(decimals)});
 
                     if (stores.indexOf(rows[i].storeName) < 0) {
                         stores.push(rows[i].storeName, rows[i].store_ID);
@@ -240,7 +256,6 @@ app.post('/findItems', function(req, res) {
                     var totalPrice = 0;
                     for (r in rows) {
                         if (rows[r].storeName == stores[i]) {
-                            console.log("HERE");
                             totalPrice += rows[r].optimize;
                         }
                     }
@@ -254,7 +269,7 @@ app.post('/findItems', function(req, res) {
                                 function(x){return {storeID: stores[i + 1], query: x};}));
                     console.log(totalPrice);
                     stores_ids_prices.push({storeName: stores[i], storeID: stores[i+1],
-                                        total: totalPrice.toFixed(2), hasAll: hasAll});
+                                        total: totalPrice.toFixed(decimals), hasAll: hasAll});
                 }       
              
                 var  totalComp = function(a, b)
@@ -322,6 +337,7 @@ function sqlQuantityRequest(query, possibleTerms, attribute, mult)
         }
     }
     
+    console.log("found = " + sqlQuantity + " query = " + query)
     return {quantity: sqlQuantity, cleanedQuery: query};
 }
 

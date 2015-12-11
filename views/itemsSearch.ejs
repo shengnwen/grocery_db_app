@@ -21,7 +21,7 @@
             <div class="item" <% if(store.hasAll == false){ %>style="background-color:#ff8080;"<%}%>>
               <input type="radio" name="store" onclick="storeSelect(<%= store.storeID %>);" value="<%= store.storeName %>"
               <% if(store.storeID == initiallySelected){ %> checked="checked" <% } %> > <span style="padding-left:8px;"><%= store.storeName %> </span>
-              <span style="position:absolute;right:10px">Total: <%= valuePrepend %><%= store.total %></span><br>
+              <span style="position:absolute;right:10px">Total: <%= valuePrepend %><%= store.total %><%= valueAppend %></span><br>
             </div>
           <% }); %>
         </form>
@@ -60,11 +60,11 @@
             <% groceries.forEach( function ( product ){ %>
               <% if (product.storeName == store.storeName) { %>
                 <div class="item">
-                  <label> $<%= product.price %> </label>
+                  <label> <%= valuePrepend %><%= product.price %><%= valueAppend %> </label>
                 </div>
               <% } %>
             <% }); %>
-           <div class="item"><label> Total: $<%= store.total %> </label></div>
+           <div class="item"><label> Total: <%= valuePrepend %><%= store.total %> <%= valueAppend %></label></div>
           </div>
         <% }); %>
       </div>
