@@ -39,7 +39,7 @@
             <% }); %>
             <% groceries.forEach( function ( product ){ %>
               <% if (product.storeName == store.storeName) { %>
-                <div class="item">
+                <div class="item" onclick="window.open('<%= product.url %>')">
                   <label> <%= product.productName %> </label>
                 </div>
               <% } %>
