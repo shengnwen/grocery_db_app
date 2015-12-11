@@ -37,7 +37,7 @@ app.get( '/index', function(req, res) { res.render( 'index')});
 app.get( '/sign-up', function(req, res) { res.render( 'sign-up')});
 app.get( '/login', function(req, res) { res.render( 'login')});
 app.get('/showHistory', userRouter.showShoppingLists);
-// send back form
+app.get('/createShoppingList', userRouter.createShoppingList);
 app.get( '/itemChoices', function(req, res) {
     db = new sqlite3.Database('groceries.sqlite');
 
