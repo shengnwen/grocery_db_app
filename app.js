@@ -270,6 +270,20 @@ app.post('/findItems', function(req, res) {
         db.all(sql.join(" UNION ") + ";", function(err, rows) {
                 console.log(err);
                 console.log(rows);
+                
+                if (rows.length === 0)
+                {
+                    res.render( 'itemsSearch', {
+                        initiallySelected: 0,
+                        groceries: [],
+                        missingGroceries: [],
+                        storeList: [],
+                        valuePrepend: valuePrepend,
+                        valueAppend: valueAppend,
+                        cache: false
+                    });
+                    return;
+                }
 
                 foodList = [];
                 stores = [];
