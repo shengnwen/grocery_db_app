@@ -89,7 +89,9 @@ app.get( '/itemChoices', function(req, res) {
         sqlAndPieces.push(" (product_name LIKE '% " + words[i] + " %'" +
                           " OR product_name LIKE '" + words[i] +" %'" +
                           " OR product_name LIKE '% " + words[i] + "'" +
-                          " OR product_name LIKE '" + words[i] + "')");
+                          " OR product_name LIKE '" + words[i] +"'" + 
+                          " OR product_name LIKE '% " + words[i] + ",%'" +
+                          " OR product_name LIKE '" + words[i] +",%')");
     }
     
     //generate sql to exclude words
@@ -100,7 +102,9 @@ app.get( '/itemChoices', function(req, res) {
             sqlNotPieces.push("(product_name LIKE '% " + notWords[i] + " %'" +
                               " OR product_name LIKE '" + notWords[i] +" %'" +
                               " OR product_name LIKE '% " + notWords[i] + "'" +
-                              " OR product_name LIKE '" + notWords[i] + "')")
+                              " OR product_name LIKE '" + notWords[i] + "'" +
+                              " OR product_name LIKE '% " + notWords[i] + ", %'" +
+                              " OR product_name LIKE '" + notWords[i] +", %')");
         }
         
         sqlNot = " EXCEPT SELECT * FROM (SELECT product_name, food_type_name FROM product WHERE" + sqlNotPieces.join(" OR ") + ")";
