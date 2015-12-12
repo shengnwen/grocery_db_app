@@ -49,7 +49,6 @@ app.get( '/itemChoices', function(req, res) {
     
     //clean the list, and sort it into a list of words to require and to exclude
     var cleanedItem = req.param("item").replace(/\'/g, "''");
-    console.log(cleanedItem);
     
     sqlQuantity = [];
     terms = [["oz|ounces|ounce", "oz", 1],
@@ -77,9 +76,7 @@ app.get( '/itemChoices', function(req, res) {
     cleanedItem = cleanedItem.replace(/\s+/g, " ").trim();
     
     var words = cleanedItem.replace(/[\s]*NOT[\s]+\S+/g, "").split(" ");
-    console.log("words = " + words)
     var notWords = cleanedItem.split(" ").filter(function(x){return words.indexOf(x) === -1 && x !== "NOT";});
-    console.log("notWords = " + notWords);
     selected = req.param("selected");
     
     sqlAndPieces = [];
@@ -115,12 +112,11 @@ app.get( '/itemChoices', function(req, res) {
     
     //combine all sql pieces together
     sql = "SELECT product_name, food_type_name FROM (SELECT product_name, food_type_name, oz, fl_oz, count FROM product WHERE" + sqlAndPieces.join(" AND ") + ")" + sqlQuantity + sqlNot + ";";
-    console.log(sql);
     //console.log(sql);
     db.all(sql,
         function(err, rows) {
             sideHTML = "Filtering:<br>";
-            console.log(err);
+
             foodNames = [];
             foodTypes = [];
             for (var i = 0; i < rows.length; i++)
@@ -145,15 +141,13 @@ app.get( '/itemChoices', function(req, res) {
             }
             
             queryHistory = "SELECT food_type_name FROM user_query_history WHERE user_ID = " + req.session.user_id + " AND query = '" + cleanedItem + "';"
-            console.log(queryHistory);
             db.all(queryHistory,
                 function(err2, rows2) {
                     var defaultFilter = "All";
                     if (rows2.length !== 0 && req.session.user_id !== -1)
                     {
                         defaultFilter = rows2[0].food_type_name;
-                        console.log("!!!!!!" + defaultFilter);
-                    }
+x                    }
                 
                     res.render( 'sideBar', {
                     selected: selected,
@@ -178,9 +172,7 @@ app.post('/findItems', function(req, res) {
 	    qu = req.body.queries;
     
     db = new sqlite3.Database('groceries.sqlite');
-    
-    console.log(req.body);
-    
+        
     var optimize, valuePrepend, valueAppend, fromAddition, decimals;
     
     if (req.body.optimize === "calories")
@@ -269,7 +261,6 @@ app.post('/findItems', function(req, res) {
 
         db.all(sql.join(" UNION ") + ";", function(err, rows) {
                 console.log(err);
-                console.log(rows);
                 
                 if (rows.length === 0)
                 {
@@ -303,7 +294,6 @@ app.post('/findItems', function(req, res) {
                     {
                         addToHistory  = "INSERT INTO user_query_history (user_ID, query, food_type_name) \
                                 VALUES (" + req.session.user_id + ", '" + rows[i].query.replace(/\'/g, "''") + "', '" + rows[i].queryType.replace(/\'/g, "''") + "');";
-                        console.log(addToHistory);
                         db.run(addToHistory);
                         
                         var newName = rows[i].productName.replace(/\'/g, "''")
@@ -313,7 +303,6 @@ app.post('/findItems', function(req, res) {
                                     VALUES (" + req.session.list_id + ", '" + newName + "');";
                             addedToList.push(newName);
                         }
-                        console.log(addToList);
                         db.run(addToList);
                     }
                 }
@@ -404,7 +393,6 @@ function sqlQuantityRequest(query, possibleTerms, attribute, mult)
         }
     }
     
-    console.log("found = " + sqlQuantity + " query = " + query)
     return {quantity: sqlQuantity, cleanedQuery: query};
 }
 

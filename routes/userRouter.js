@@ -17,11 +17,9 @@ exports.userLogin = function(req, res) {
     db.all(sql,function(err,rows){
 //rows contain values while errors, well you can figure out.
         if (rows == null || rows.length == 0) {
-            console.log("rows is not exist");
             res.send("No this user in database, sorry:)");
             res.redirect('/login');
         } else{
-            console.log("rows is  exist:" + rows[0].user_ID);
             //var sql = "insert into shopping_list(user_ID, created_date) values(" + rows[0].user_ID + ", Date('now'))";
 
             req.session.user_id = rows[0].user_ID;
@@ -42,7 +40,6 @@ exports.addNewUser = function(req, res) {
     var username = req.body.username;
     var sql;
     sql = "insert into user_ (username, email, password) values ('" + username + "','" + email + "','" + password + "');";
-    console.log(sql);
 
     db.serialize(function() {
         db.run(sql);
@@ -55,7 +52,7 @@ exports.showShoppingLists = function(req, res) {
     db = new sqlite3.Database('groceries.sqlite');
     //var sql = "select * from "
     var sql = "select shopping_list.created_date, list_items.product_name from list_items, shopping_list where list_items.list_ID = shopping_list.list_ID and shopping_list.user_id = " + req.session.user_id;
-    console.log(sql);
+
     db.all(sql, function(err, rows){
         var shopping_items = [];
         for (var i in rows) {
