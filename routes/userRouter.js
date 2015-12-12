@@ -16,8 +16,8 @@ exports.userLogin = function(req, res) {
     }
     db.all(sql,function(err,rows){
 //rows contain values while errors, well you can figure out.
-        if (rows == null || rows.length == 0) {
-            res.send("No this user in database, sorry:)");
+        if (rows == null || rows.length === 0) {
+            res.send("No such user in database, sorry:)");
             res.redirect('/login');
         } else{
             //var sql = "insert into shopping_list(user_ID, created_date) values(" + rows[0].user_ID + ", Date('now'))";
@@ -39,13 +39,22 @@ exports.addNewUser = function(req, res) {
     var password = req.body.pwd;
     var username = req.body.username;
     var sql;
-    sql = "insert into user_ (username, email, password) values ('" + username + "','" + email + "','" + password + "');";
-
-    db.serialize(function() {
-        db.run(sql);
-    });
-    console.log("add new user!");
-    res.redirect('/login');//('login');
+    sqlCreate = "insert into user_ (username, email, password) values ('" + username + "','" + email + "','" + password + "');";
+    
+    db.all("SELECT * FROM user_ WHERE email = '" + email + "';", function(err, rows) {
+            if (rows.length === 0)
+            {
+                db.serialize(function() {
+                    db.run(sqlCreate);
+                });
+                res.redirect('/login');//('login');
+            }
+            else
+            {
+                res.send("Email already used, sorry.");
+            }
+        }
+    );
 };
 exports.showShoppingLists = function(req, res) {
     console.log("show history" + req.session.user_id);
